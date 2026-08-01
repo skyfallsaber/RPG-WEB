@@ -1,0 +1,11 @@
+{
+  "name": "rpg-web",
+  "version": "0.1.0",
+  "description": "RPG Web Online com progressão de personagens, exploração, combate, multiplayer e sistema de legado.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "desenvolvimento": "node aplicativos/servidor/index.js",
+    "inicio": "node aplicativos/servidor/index.js"
+  }
+}

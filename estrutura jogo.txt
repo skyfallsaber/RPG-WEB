@@ -1,0 +1,894 @@
+RPG Web — Estrutura e Organização do Projeto
+1. Objetivo da estrutura
+
+Este projeto deve possuir uma arquitetura modular, organizada, escalável e orientada a dados.
+
+A principal regra da arquitetura é:
+
+O código define como o jogo funciona. Os dados definem o que existe no jogo.
+
+O projeto deve ser desenvolvido de forma que seja possível adicionar novos conteúdos e funcionalidades sem precisar modificar constantemente arquivos centrais ou criar arquivos gigantes.
+
+Novos monstros, habilidades, classes, itens, cidades, NPCs, masmorras, eventos e outros conteúdos devem, sempre que possível, ser adicionados através de novos arquivos ou módulos dentro das pastas correspondentes.
+
+2. Estrutura principal
+rpg-web/
+│
+├── README.md
+├── package.json
+├── .env.example
+├── .gitignore
+│
+├── aplicativos/
+│   ├── web/
+│   ├── servidor/
+│   └── jogo/
+│
+├── dados/
+│   ├── mundo/
+│   ├── personagens/
+│   ├── criaturas/
+│   ├── itens/
+│   ├── economia/
+│   └── historia/
+│
+├── recursos/
+│   ├── imagens/
+│   ├── animacoes/
+│   ├── sons/
+│   ├── musicas/
+│   └── efeitos/
+│
+├── configuracoes/
+│   ├── jogo/
+│   ├── combate/
+│   ├── progressao/
+│   ├── raridade/
+│   ├── economia/
+│   ├── multijogador/
+│   └── mundo/
+│
+├── banco-de-dados/
+│   ├── migracoes/
+│   ├── dados-iniciais/
+│   └── estruturas/
+│
+├── documentacao/
+│   ├── projeto/
+│   ├── sistemas/
+│   ├── mundo/
+│   ├── multijogador/
+│   └── desenvolvimento/
+│
+└── ferramentas/
+    ├── conteudo/
+    ├── validacao/
+    └── desenvolvimento/
+3. Arquivos principais
+README.md
+
+Documento principal do projeto.
+
+Deve explicar:
+
+O conceito do RPG.
+Objetivos do projeto.
+Estrutura do projeto.
+Regras de desenvolvimento.
+Sistemas existentes.
+Regras de arquitetura.
+Como iniciar o projeto.
+Como contribuir.
+Informações importantes para futuras IAs que trabalharem no projeto.
+
+O README deve funcionar como o manual principal do projeto.
+
+package.json
+
+Arquivo responsável pelas informações e configurações principais do projeto JavaScript/Node.js.
+
+Deve conter informações como:
+
+Nome do projeto.
+Versão.
+Dependências.
+Ferramentas utilizadas.
+Scripts de execução.
+Scripts de desenvolvimento.
+Scripts de testes.
+
+Não deve conter as regras do RPG.
+
+.env.example
+
+Arquivo de exemplo das variáveis de ambiente necessárias para executar o projeto.
+
+Pode conter referências para informações como:
+
+Banco de dados.
+Servidor.
+Ambiente de execução.
+Chaves necessárias.
+Configurações externas.
+
+Nunca colocar senhas ou informações privadas reais neste arquivo.
+
+.gitignore
+
+Define quais arquivos e pastas não devem ser enviados para o Git.
+
+Deve impedir que informações como:
+
+Senhas.
+Variáveis privadas.
+Dependências instaladas.
+Arquivos temporários.
+Arquivos de desenvolvimento.
+Outros arquivos desnecessários.
+
+sejam enviados para o repositório.
+
+4. aplicativos/
+
+Contém as aplicações que fazem o RPG funcionar.
+
+A pasta é dividida em três partes principais:
+
+aplicativos/
+├── web/
+├── servidor/
+└── jogo/
+aplicativos/web/
+
+Responsável pela interface visual do jogador.
+
+É onde ficam as telas e elementos visuais utilizados pelo jogador para interagir com o RPG.
+
+Pode conter módulos como:
+
+web/
+├── telas/
+├── componentes/
+├── interface/
+├── combate/
+├── personagem/
+├── inventario/
+├── mundo/
+├── cidades/
+├── guildas/
+├── comercio/
+└── social/
+
+A interface deve apenas apresentar e receber informações do jogo.
+
+As regras principais do RPG não devem ficar espalhadas pela interface.
+
+aplicativos/servidor/
+
+Responsável pela comunicação entre jogadores e pelo funcionamento online do RPG.
+
+Pode conter módulos como:
+
+servidor/
+├── autenticacao/
+├── jogadores/
+├── sessoes/
+├── multijogador/
+├── combate/
+├── inventario/
+├── comercio/
+├── guildas/
+├── chat/
+├── progressao/
+└── geracoes/
+
+É responsável por controlar informações que precisam ser mantidas e sincronizadas no ambiente online.
+
+aplicativos/jogo/
+
+Contém o núcleo das regras do RPG.
+
+Essa é uma das partes mais importantes do projeto.
+
+Pode conter:
+
+jogo/
+├── personagem/
+├── atributos/
+├── habilidades/
+├── classes/
+├── combate/
+├── monstros/
+├── itens/
+├── inventario/
+├── equipamentos/
+├── progressao/
+├── experiencia/
+├── criacao-de-habilidades/
+├── fusao-de-habilidades/
+├── geracoes/
+├── legado/
+├── comercio/
+├── guildas/
+├── reputacao/
+├── mundo/
+├── missoes/
+├── eventos/
+└── multijogador/
+
+Esses módulos determinam como as regras do RPG funcionam.
+
+Exemplo:
+
+O sistema de monstros sabe como um monstro funciona.
+
+O arquivo de dados do monstro define qual monstro existe.
+
+5. dados/
+
+Contém o conteúdo do universo do RPG.
+
+A pasta dados/ não deve conter as regras principais do funcionamento dos sistemas.
+
+Ela deve definir os elementos que existem dentro do mundo.
+
+dados/
+├── mundo/
+├── personagens/
+├── criaturas/
+├── itens/
+├── economia/
+└── historia/
+
+A intenção é permitir que o jogo cresça através da adição de novos conteúdos.
+
+6. dados/mundo/
+
+Contém o conteúdo relacionado ao mundo do RPG.
+
+mundo/
+├── cidades/
+├── regioes/
+├── masmorras/
+├── locais/
+└── eventos/
+cidades/
+
+Contém as cidades existentes no mundo.
+
+Cada cidade deve ser independente sempre que possível.
+
+Exemplo:
+
+cidades/
+├── cidade-inicial/
+├── cidade-do-norte/
+└── cidade-do-deserto/
+
+Uma cidade pode possuir seus próprios:
+
+Locais.
+NPCs.
+Lojas.
+Missões.
+Eventos.
+Conteúdos específicos.
+regioes/
+
+Contém as regiões e áreas geográficas do mundo.
+
+Exemplos:
+
+Florestas.
+Desertos.
+Montanhas.
+Planícies.
+Pântanos.
+Regiões especiais.
+masmorras/
+
+Contém as masmorras existentes no mundo.
+
+Cada masmorra deve poder possuir seus próprios:
+
+Andares.
+Áreas.
+Monstros.
+Chefes.
+Recompensas.
+Eventos.
+Conteúdos especiais.
+locais/
+
+Contém locais especiais ou áreas exploráveis que não precisam necessariamente ser cidades ou masmorras.
+
+Exemplos:
+
+Ruínas.
+Cavernas.
+Templos.
+Florestas especiais.
+Áreas secretas.
+eventos/
+
+Contém os eventos relacionados ao mundo.
+
+Pode incluir:
+
+Eventos mundiais.
+Eventos regionais.
+Eventos de cidades.
+Eventos especiais.
+Eventos temporários.
+7. dados/personagens/
+
+Contém os dados relacionados à criação e desenvolvimento dos personagens.
+
+personagens/
+├── classes/
+├── habilidades/
+├── magias/
+├── atributos/
+└── racas/
+classes/
+
+Contém as classes existentes no RPG.
+
+Exemplos:
+
+classes/
+├── guerreiro/
+├── mago/
+├── arqueiro/
+├── ladrao/
+├── clerigo/
+├── paladino/
+├── barbaro/
+├── assassino/
+└── criadas-por-jogadores/
+
+As classes criadas pelos jogadores devem possuir uma área própria para não misturar conteúdo oficial com conteúdo criado pela comunidade.
+
+habilidades/
+
+Contém as habilidades existentes no jogo.
+
+Pode ser dividido em:
+
+habilidades/
+├── fisicas/
+├── magicas/
+├── ofensivas/
+├── defensivas/
+├── movimento/
+├── passivas/
+├── utilidade/
+└── criadas-por-jogadores/
+
+As habilidades podem evoluir independentemente do nível geral do personagem.
+
+magias/
+
+Contém magias do RPG.
+
+Como magia faz parte do sistema de habilidades, as regras de funcionamento devem permanecer no sistema de habilidades, enquanto esta pasta contém o conteúdo das magias.
+
+Pode conter:
+
+Magias elementais.
+Cura.
+Suporte.
+Invocação.
+Ataque.
+Defesa.
+Magias criadas pelos jogadores.
+atributos/
+
+Contém as definições dos atributos utilizados pelo RPG.
+
+Atributos inicialmente planejados:
+
+Força.
+Destreza.
+Agilidade.
+Constituição.
+Inteligência.
+Sabedoria.
+Carisma.
+Sorte.
+
+O sistema inicial deverá trabalhar com a distribuição limitada de pontos definida pelo projeto.
+
+racas/
+
+Área reservada para as raças dos personagens.
+
+A estrutura pode ser expandida posteriormente quando o sistema de raças for definido.
+
+8. dados/criaturas/
+
+Contém os seres existentes no mundo.
+
+criaturas/
+├── monstros/
+├── chefes/
+└── npcs/
+monstros/
+
+Contém os monstros enfrentados pelos jogadores.
+
+Pode ser dividido em categorias:
+
+monstros/
+├── feras/
+├── mortos-vivos/
+├── humanoides/
+├── demonios/
+├── elementais/
+└── monstros-especiais/
+
+Cada monstro pode possuir informações como:
+
+Nome.
+Imagem.
+Animações.
+Vida.
+Atributos.
+Ataques.
+Habilidades.
+Resistências.
+Fraquezas.
+Recompensas.
+chefes/
+
+Contém os chefes do jogo.
+
+Pode ser dividido em:
+
+Chefes de masmorras.
+Chefes regionais.
+Chefes mundiais.
+Chefes especiais.
+npcs/
+
+Contém os personagens não jogáveis do mundo.
+
+Pode ser dividido em:
+
+npcs/
+├── comerciantes/
+├── treinadores/
+├── personagens-de-missao/
+├── habitantes/
+├── guardas/
+└── personagens-unicos/
+9. dados/itens/
+
+Contém os itens disponíveis no RPG.
+
+itens/
+├── armas/
+├── armaduras/
+├── consumiveis/
+├── materiais/
+├── itens-de-missao/
+└── diversos/
+
+Pode conter:
+
+Armas.
+Armaduras.
+Consumíveis.
+Materiais.
+Itens de missão.
+Objetos diversos.
+10. dados/economia/
+
+Contém os conteúdos relacionados à economia do mundo.
+
+economia/
+├── lojas/
+├── moedas/
+└── comercio/
+
+Pode ser utilizado para conteúdos como:
+
+Lojas.
+Moedas.
+Comércio entre jogadores.
+Mercado.
+Comércio de itens.
+Comércio de habilidades.
+Comércio de conhecimentos.
+
+As regras econômicas ficam no sistema de economia dentro de aplicativos/jogo/.
+
+11. dados/historia/
+
+Contém o conteúdo narrativo e histórico do universo.
+
+historia/
+├── faccoes/
+├── religioes/
+├── historias/
+└── lendas/
+
+Pode conter:
+
+História do mundo.
+Fações.
+Religiões.
+Lendas.
+Eventos históricos.
+Informações sobre o universo.
+12. recursos/
+
+Contém os arquivos utilizados visualmente ou sonoramente pelo jogo.
+
+recursos/
+├── imagens/
+├── animacoes/
+├── sons/
+├── musicas/
+└── efeitos/
+
+Os recursos devem ficar separados dos dados e da lógica do jogo.
+
+imagens/
+
+Contém imagens utilizadas pelo RPG.
+
+imagens/
+├── personagens/
+├── monstros/
+├── itens/
+├── cidades/
+└── mundo/
+animacoes/
+
+Contém animações utilizadas pelo jogo.
+
+Pode incluir:
+
+Personagens.
+Monstros.
+Habilidades.
+Ataques.
+Combate.
+Mundo.
+sons/
+
+Contém efeitos sonoros.
+
+Exemplos:
+
+Ataques.
+Passos.
+Menus.
+Interface.
+Ambiente.
+Interações.
+musicas/
+
+Contém as músicas do jogo.
+
+Pode ser dividido futuramente por:
+
+Cidade.
+Combate.
+Exploração.
+Masmorra.
+Eventos.
+Menu.
+efeitos/
+
+Contém efeitos visuais ou outros recursos especiais utilizados pelo jogo.
+
+Exemplos:
+
+Fogo.
+Magia.
+Explosões.
+Energia.
+Habilidades.
+Efeitos de combate.
+13. configuracoes/
+
+Contém configurações que podem ser alteradas sem espalhar valores pelo código.
+
+configuracoes/
+├── jogo/
+├── combate/
+├── progressao/
+├── raridade/
+├── economia/
+├── multijogador/
+└── mundo/
+
+A ideia é centralizar regras configuráveis.
+
+jogo/
+
+Configurações gerais do RPG.
+
+combate/
+
+Configurações relacionadas ao sistema de combate.
+
+progressao/
+
+Configurações relacionadas à evolução dos personagens, habilidades e classes.
+
+raridade/
+
+Configurações do sistema de raridade.
+
+A escala inicial definida pelo projeto é:
+
+Comum
+Raro
+Épico
+Lendário
+Mítico
+Divino
+economia/
+
+Configurações gerais da economia do jogo.
+
+multijogador/
+
+Configurações relacionadas ao funcionamento online.
+
+mundo/
+
+Configurações gerais do mundo do RPG.
+
+14. banco-de-dados/
+
+Responsável pela organização do banco de dados.
+
+banco-de-dados/
+├── migracoes/
+├── dados-iniciais/
+└── estruturas/
+migracoes/
+
+Contém alterações estruturais do banco de dados ao longo do desenvolvimento.
+
+dados-iniciais/
+
+Contém dados necessários para iniciar o jogo.
+
+Pode incluir informações iniciais como:
+
+Conteúdo padrão.
+Configurações iniciais.
+Dados básicos do mundo.
+estruturas/
+
+Contém definições e organização das estruturas utilizadas no banco.
+
+15. documentacao/
+
+Contém a documentação do projeto.
+
+documentacao/
+├── projeto/
+├── sistemas/
+├── mundo/
+├── multijogador/
+└── desenvolvimento/
+
+A documentação deve ser mantida atualizada conforme o projeto evolui.
+
+projeto/
+
+Documentação geral do RPG.
+
+Pode conter:
+
+Visão geral.
+Objetivos.
+Filosofia do jogo.
+Conceitos principais.
+Diretrizes gerais.
+sistemas/
+
+Documentação detalhada de cada sistema.
+
+Exemplos:
+
+sistemas/
+├── personagem.md
+├── atributos.md
+├── habilidades.md
+├── classes.md
+├── combate.md
+├── progressao.md
+├── geracoes.md
+├── legado.md
+├── guildas.md
+├── comercio.md
+└── multijogador.md
+mundo/
+
+Documentação sobre o universo do jogo.
+
+Pode conter:
+
+Geografia.
+História.
+Cidades.
+Regiões.
+Fações.
+Cultura.
+Regras do mundo.
+multijogador/
+
+Documentação específica dos sistemas online.
+
+desenvolvimento/
+
+Documentação técnica para quem estiver desenvolvendo o projeto.
+
+Deve explicar decisões importantes da arquitetura e padrões que devem ser seguidos.
+
+16. ferramentas/
+
+Contém ferramentas auxiliares para desenvolvimento.
+
+ferramentas/
+├── conteudo/
+├── validacao/
+└── desenvolvimento/
+conteudo/
+
+Ferramentas relacionadas à criação e gerenciamento de conteúdo.
+
+Podem futuramente auxiliar na criação de:
+
+Habilidades.
+Classes.
+Monstros.
+Itens.
+NPCs.
+Cidades.
+Eventos.
+validacao/
+
+Ferramentas para verificar se os dados estão corretos.
+
+Podem verificar:
+
+Arquivos inválidos.
+Dados ausentes.
+Referências quebradas.
+Habilidades incompatíveis.
+Classes inválidas.
+Conteúdo duplicado.
+Erros de configuração.
+desenvolvimento/
+
+Ferramentas auxiliares utilizadas durante o desenvolvimento.
+
+17. Regra fundamental de modularidade
+
+O projeto deve evitar arquivos centrais gigantes.
+
+Não criar arquivos que concentrem todo o funcionamento do RPG.
+
+Evitar estruturas como:
+
+jogo.js
+combate.js
+habilidades.js
+monstros.js
+cidades.js
+
+quando esses arquivos começarem a concentrar centenas ou milhares de responsabilidades.
+
+Preferir módulos separados:
+
+jogo/
+├── combate/
+├── habilidades/
+├── personagens/
+├── monstros/
+├── itens/
+├── progressao/
+└── geracoes/
+
+Cada módulo deve possuir uma responsabilidade clara.
+
+18. Regra de separação entre código e conteúdo
+
+O código deve responder:
+
+Como isso funciona?
+
+Os dados devem responder:
+
+O que existe?
+
+Exemplo:
+
+O sistema de combate determina como o dano funciona.
+
+Os dados determinam que existe uma habilidade chamada "Bola de Fogo".
+
+O sistema de monstros determina como monstros funcionam.
+
+Os dados determinam que existe um "Lobo Cinzento".
+
+O sistema de cidades determina como cidades funcionam.
+
+Os dados determinam que existe uma "Cidade Inicial".
+
+19. Regra para adicionar novos conteúdos
+
+Sempre que possível, novos conteúdos devem ser adicionados criando novos arquivos ou pastas.
+
+Novo monstro
+dados/criaturas/monstros/
+Nova habilidade
+dados/personagens/habilidades/
+Nova classe
+dados/personagens/classes/
+Novo item
+dados/itens/
+Nova cidade
+dados/mundo/cidades/
+Nova masmorra
+dados/mundo/masmorras/
+Novo NPC
+dados/criaturas/npcs/
+Novo evento
+dados/mundo/eventos/
+20. Regra para desenvolvimento com Inteligência Artificial
+
+Qualquer Inteligência Artificial que trabalhar neste projeto deverá respeitar a arquitetura existente.
+
+Antes de criar ou modificar qualquer arquivo, a IA deve:
+
+Entender a estrutura existente.
+Identificar o sistema responsável pela funcionalidade.
+Verificar se já existe um módulo relacionado.
+Evitar duplicar sistemas.
+Evitar criar arquivos gigantes.
+Manter a separação entre lógica e dados.
+Adicionar novos conteúdos nas pastas apropriadas.
+Alterar sistemas existentes somente quando necessário.
+Não remover funcionalidades existentes sem autorização.
+Manter a documentação atualizada quando uma alteração estrutural for realizada.
+
+A IA não deve reorganizar toda a estrutura do projeto sem necessidade.
+
+21. Princípio geral
+
+O RPG deve ser construído pensando em crescimento de longo prazo.
+
+A arquitetura deve permitir que o projeto evolua de:
+
+poucas classes → muitas classes
+
+poucas habilidades → milhares de habilidades
+
+poucos monstros → centenas ou milhares de monstros
+
+uma cidade → um mundo inteiro
+
+um personagem → várias gerações
+
+sem transformar o projeto em uma coleção de arquivos gigantes e difíceis de manter.
+
+O objetivo é:
+
+Adicionar conteúdo sem precisar reescrever o jogo.
+
+Adicionar sistemas sem destruir os sistemas existentes.
+
+Manter cada funcionalidade organizada em seu próprio módulo.
+
+Manter o conteúdo separado das regras.
+
+Construir uma base que possa crescer junto com o RPG.

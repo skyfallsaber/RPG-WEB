@@ -1,0 +1,45 @@
+# Dependências do Node.js
+node_modules/
+
+# Variáveis de ambiente e informações privadas
+.env
+.env.local
+.env.development
+.env.production
+
+# Logs
+*.log
+logs/
+
+# Arquivos temporários
+tmp/
+temp/
+
+# Cache
+.cache/
+.npm/
+
+# Builds e arquivos gerados
+dist/
+build/
+
+# Testes e cobertura
+coverage/
+
+# Banco de dados local
+*.sqlite
+*.sqlite3
+*.db
+
+# Arquivos de backup
+*.bak
+*.backup
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# VS Code - configurações pessoais
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
