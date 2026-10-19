@@ -1,0 +1,290 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Sua História | RPG Web</title>
+
+    <link
+        rel="stylesheet"
+        href="/estilos/inicio.css"
+    >
+</head>
+
+<body>
+
+    <main class="jogo">
+
+        <header class="cabecalho">
+
+            <div>
+                <h1>Sua História</h1>
+                <p>Uma nova jornada começa.</p>
+            </div>
+
+            <button
+                id="botao-personagem"
+                type="button"
+            >
+                Personagem
+            </button>
+
+        </header>
+
+        <section class="informacoes">
+
+            <div class="painel personagem">
+
+                <h2>Personagem</h2>
+
+                <div class="perfil-personagem">
+
+                    <div class="retrato-personagem">
+
+                        <span
+                            class="retrato-placeholder"
+                            aria-hidden="true"
+                        >⚔</span>
+
+                        <img
+                            src="/imagens/personagem-retrato.png"
+                            alt="Retrato do personagem"
+                            onerror="this.style.display='none'"
+                        >
+
+                    </div>
+
+                    <div class="dados-personagem">
+
+                        <h3 id="nome-personagem">
+                            Carregando...
+                        </h3>
+
+                        <p>
+                            Nível:
+                            <strong id="nivel">—</strong>
+                        </p>
+
+                        <p>
+                            XP:
+                            <strong id="xp">—</strong>
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="painel localizacao">
+
+                <h2>Localização</h2>
+
+                <p>
+                    Região:
+                    <strong id="regiao">Carregando...</strong>
+                </p>
+
+                <p>
+                    Cidade:
+                    <strong id="cidade">Carregando...</strong>
+                </p>
+
+                <p>
+                    Local:
+                    <strong id="local">Carregando...</strong>
+                </p>
+
+                <button
+                    id="botao-mapa"
+                    type="button"
+                >
+                    Explorar o mundo
+                </button>
+
+            </div>
+
+        </section>
+
+        <section class="painel local-atual">
+
+            <h2>Onde você está</h2>
+
+            <h3 id="titulo-local">
+                Carregando localização...
+            </h3>
+
+            <p id="descricao-local"></p>
+
+        </section>
+
+    </main>
+
+    <script type="module">
+
+        import {
+            carregarPersonagem
+        } from "/jogo/personagem/armazenamento.js";
+
+        import {
+            obterRegiao,
+            obterCidade,
+            obterLocal
+        } from "/jogo/mundo/mundo.js";
+
+
+        const personagem = carregarPersonagem();
+
+
+        document
+            .getElementById("botao-personagem")
+            .addEventListener("click", () => {
+
+                window.location.href =
+                    "/telas/personagem.html";
+
+            });
+
+
+        document
+            .getElementById("botao-mapa")
+            .addEventListener("click", () => {
+
+                window.location.href =
+                    "/telas/mapa.html";
+
+            });
+
+
+        if (!personagem) {
+
+            document.querySelector(".jogo").innerHTML = `
+                <section class="painel">
+                    <h1>Nenhum personagem encontrado</h1>
+
+                    <p>
+                        Crie um personagem para começar sua aventura.
+                    </p>
+
+                    <button id="botao-criar-personagem" type="button">
+                        Criar personagem
+                    </button>
+                </section>
+            `;
+
+            document
+                .getElementById("botao-criar-personagem")
+                .addEventListener("click", () => {
+
+                    window.location.href =
+                        "/telas/criacao-personagem.html";
+
+                });
+
+        } else {
+
+            mostrarPersonagem();
+            mostrarLocalizacao();
+
+        }
+
+
+        function mostrarPersonagem() {
+
+            document.getElementById(
+                "nome-personagem"
+            ).textContent =
+                personagem.nome || "Aventureiro";
+
+            document.getElementById(
+                "nivel"
+            ).textContent =
+                personagem.nivel ?? 1;
+
+            document.getElementById(
+                "xp"
+            ).textContent =
+                `${(Number(personagem.xp) || 0).toLocaleString("pt-BR")} XP`;
+
+        }
+
+
+        function mostrarLocalizacao() {
+
+            const localizacao = personagem.localizacao;
+
+            if (!localizacao) {
+
+                document.getElementById("regiao").textContent =
+                    "Indisponível";
+
+                document.getElementById("cidade").textContent =
+                    "Indisponível";
+
+                document.getElementById("local").textContent =
+                    "Indisponível";
+
+                document.getElementById("titulo-local").textContent =
+                    "Localização indisponível";
+
+                document.getElementById("descricao-local").textContent =
+                    "A localização deste personagem ainda não foi definida.";
+
+                return;
+
+            }
+
+
+            const regiao = obterRegiao(
+                localizacao.regiaoId
+            );
+
+            const cidade = obterCidade(
+                localizacao.cidadeId
+            );
+
+            const local = obterLocal(
+                localizacao.localId
+            );
+
+
+            document.getElementById(
+                "regiao"
+            ).textContent =
+                regiao?.nome || "Região desconhecida";
+
+            document.getElementById(
+                "cidade"
+            ).textContent =
+                cidade?.nome || "Área externa";
+
+            document.getElementById(
+                "local"
+            ).textContent =
+                local?.nome || "Local desconhecido";
+
+            document.getElementById(
+                "titulo-local"
+            ).textContent =
+                local?.nome || "Local desconhecido";
+
+            document.getElementById(
+                "descricao-local"
+            ).textContent =
+                local?.descricao || "Nenhuma descrição disponível.";
+
+        }
+
+    </script>
+
+</body>
+
+</html>
+```

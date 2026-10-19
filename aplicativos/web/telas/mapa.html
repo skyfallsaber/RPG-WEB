@@ -1,0 +1,279 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa do Mundo | RPG Web</title>
+    <link rel="stylesheet" href="/estilos/mapa.css">
+</head>
+<body>
+    <main class="mapa-page">
+        <header class="cabecalho">
+            <div>
+                <p class="etiqueta">EXPLORAÇÃO DO MUNDO</p>
+                <h1>Mapa do Mundo</h1>
+                <p class="descricao-cabecalho">
+                    Descubra lugares, percorra estradas e explore novas áreas.
+                </p>
+            </div>
+
+            <div class="acoes-cabecalho">
+                <button id="voltar-aventura" class="botao-secundario">
+                    Voltar à aventura
+                </button>
+                <button id="abrir-ficha" class="botao-secundario">
+                    Ficha do personagem
+                </button>
+            </div>
+        </header>
+
+        <section class="painel local-atual">
+            <div class="icone-local">
+                <span>⌖</span>
+            </div>
+
+            <div class="local-atual-info">
+                <p class="etiqueta">VOCÊ ESTÁ EM</p>
+                <h2 id="nome-local-atual">Carregando...</h2>
+                <p id="descricao-local-atual">
+                    Consultando o mundo...
+                </p>
+                <div class="caminho-atual">
+                    <span id="regiao-atual"></span>
+                    <span class="separador">/</span>
+                    <span id="cidade-atual"></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="painel">
+            <div class="titulo-painel">
+                <div>
+                    <p class="etiqueta">CAMINHOS DISPONÍVEIS</p>
+                    <h2>Para onde deseja ir?</h2>
+                </div>
+                <span class="contador" id="contador-destinos">0 destinos</span>
+            </div>
+
+            <div id="lista-destinos" class="lista-destinos"></div>
+
+            <p id="mensagem-mapa" class="mensagem-mapa" role="status"></p>
+        </section>
+
+        <footer class="rodape">
+            <span>RPG Web</span>
+            <span>Explore com sabedoria, aventureiro.</span>
+        </footer>
+    </main>
+
+    <script type="module">
+        import {
+            carregarPersonagem,
+            salvarPersonagem
+        } from "/jogo/personagem/armazenamento.js";
+
+        import {
+            obterRegiao,
+            obterCidade
+        } from "/jogo/mundo/mundo.js";
+
+        import {
+            obterLocalAtual,
+            obterDestinosPossiveis,
+            moverPersonagem
+        } from "/jogo/mundo/navegacao.js";
+
+        const listaDestinos = document.getElementById("lista-destinos");
+        const mensagemMapa = document.getElementById("mensagem-mapa");
+
+        document.getElementById("voltar-aventura").addEventListener("click", () => {
+            window.location.href = "/telas/inicio.html";
+        });
+
+        document.getElementById("abrir-ficha").addEventListener("click", () => {
+            window.location.href = "/telas/personagem.html";
+        });
+
+        function carregarEstadoAtual() {
+            const personagem = carregarPersonagem();
+
+            if (!personagem) {
+                document.querySelector(".mapa-page").innerHTML = `
+                    <section class="painel erro-mapa">
+                        <h1>Nenhum personagem encontrado</h1>
+                        <p>Crie um personagem antes de explorar o mundo.</p>
+                        <button id="ir-criacao" class="botao-secundario">
+                            Criar personagem
+                        </button>
+                    </section>
+                `;
+
+                document.getElementById("ir-criacao").addEventListener("click", () => {
+                    window.location.href = "/telas/criacao-personagem.html";
+                });
+
+                return null;
+            }
+
+            return personagem;
+        }
+
+        function mostrarLocalAtual(personagem) {
+            const local = obterLocalAtual(personagem);
+            const regiao = obterRegiao(personagem.localizacao?.regiaoId);
+            const cidade = obterCidade(personagem.localizacao?.cidadeId);
+
+            if (!local) {
+                document.getElementById("nome-local-atual").textContent =
+                    "Local desconhecido";
+
+                document.getElementById("descricao-local-atual").textContent =
+                    "Não foi possível identificar a localização atual.";
+
+                document.getElementById("regiao-atual").textContent =
+                    "Região desconhecida";
+
+                document.getElementById("cidade-atual").textContent =
+                    "Cidade desconhecida";
+
+                return false;
+            }
+
+            document.getElementById("nome-local-atual").textContent =
+                local.nome;
+
+            document.getElementById("descricao-local-atual").textContent =
+                local.descricao || "Nenhuma descrição disponível.";
+
+            document.getElementById("regiao-atual").textContent =
+                regiao?.nome || "Área desconhecida";
+
+            document.getElementById("cidade-atual").textContent =
+                cidade?.nome || "Área externa";
+
+            return true;
+        }
+
+        function mostrarDestinos(personagem) {
+            listaDestinos.replaceChildren();
+
+            const destinos = obterDestinosPossiveis(personagem);
+
+            document.getElementById("contador-destinos").textContent =
+                destinos.length === 1
+                    ? "1 destino"
+                    : `${destinos.length} destinos`;
+
+            if (destinos.length === 0) {
+                const aviso = document.createElement("p");
+                aviso.className = "sem-destinos";
+                aviso.textContent =
+                    "Não há caminhos conectados disponíveis neste local.";
+
+                listaDestinos.appendChild(aviso);
+                return;
+            }
+
+            for (const destino of destinos) {
+                const cartao = document.createElement("article");
+                cartao.className = "cartao-destino";
+
+                const icone = document.createElement("div");
+                icone.className = "icone-destino";
+                icone.textContent = obterIconeDestino(destino.id);
+                icone.setAttribute("aria-hidden", "true");
+
+                const conteudo = document.createElement("div");
+                conteudo.className = "conteudo-destino";
+
+                const nome = document.createElement("h3");
+                nome.textContent = destino.nome;
+
+                const descricao = document.createElement("p");
+                descricao.textContent =
+                    destino.descricao || "Explore este local.";
+
+                conteudo.append(nome, descricao);
+
+                const botao = document.createElement("button");
+                botao.className = "botao-viajar";
+                botao.textContent = "Viajar";
+                botao.setAttribute("aria-label", `Viajar para ${destino.nome}`);
+
+                botao.addEventListener("click", () => {
+                    viajarPara(destino.id);
+                });
+
+                cartao.append(icone, conteudo, botao);
+                listaDestinos.appendChild(cartao);
+            }
+        }
+
+        function obterIconeDestino(id) {
+            const icones = {
+                "praca": "⌖",
+                "taverna": "♜",
+                "loja": "⚒",
+                "saida-cidade": "⇥",
+                "estrada-inicial": "➜",
+                "floresta-inicial": "♧"
+            };
+
+            return icones[id] || "◇";
+        }
+
+        function viajarPara(destinoId) {
+            const personagem = carregarPersonagem();
+
+            if (!personagem) {
+                mostrarMensagem("Personagem não encontrado.", true);
+                return;
+            }
+
+            const resultado = moverPersonagem(personagem, destinoId);
+
+            if (!resultado.sucesso) {
+                mostrarMensagem(resultado.mensagem, true);
+                return;
+            }
+
+            salvarPersonagem(resultado.personagem);
+
+            mensagemMapa.textContent = "";
+            renderizarMapa();
+        }
+
+        function mostrarMensagem(texto, erro = false) {
+            mensagemMapa.textContent = texto;
+            mensagemMapa.classList.toggle("mensagem-erro", erro);
+        }
+
+        function renderizarMapa() {
+            const personagem = carregarEstadoAtual();
+
+            if (!personagem) {
+                return;
+            }
+
+            const localValido = mostrarLocalAtual(personagem);
+
+            if (!localValido) {
+                listaDestinos.replaceChildren();
+
+                mostrarMensagem(
+                    "Verifique os IDs de localização do personagem e os dados do mundo.",
+                    true
+                );
+
+                return;
+            }
+
+            mostrarDestinos(personagem);
+        }
+
+        renderizarMapa();
+    </script>
+</body>
+</html>
+```

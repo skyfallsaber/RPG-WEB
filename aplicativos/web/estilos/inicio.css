@@ -1,0 +1,439 @@
+
+:root {
+    color-scheme: dark;
+
+    --fundo: #0b0b0c;
+    --painel: #171613;
+    --painel-secundario: #201c16;
+
+    --borda: #55452b;
+    --borda-dourada: #9d7b40;
+
+    --dourado: #c9a45c;
+    --dourado-claro: #f0d8a0;
+
+    --texto: #e8e0d1;
+    --texto-suave: #aaa08f;
+
+    --sombra: rgba(0, 0, 0, 0.4);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+
+    font-family: Arial, sans-serif;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 0%,
+            rgba(116, 83, 39, 0.12),
+            transparent 55%
+        ),
+        linear-gradient(
+            180deg,
+            #11100e 0%,
+            var(--fundo) 100%
+        );
+
+    color: var(--texto);
+}
+
+button {
+    border: 1px solid var(--borda-dourada);
+    border-radius: 5px;
+
+    padding: 12px 18px;
+
+    background: linear-gradient(
+        180deg,
+        #3b2e1c,
+        #241b11
+    );
+
+    color: var(--dourado-claro);
+
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 0.4px;
+
+    cursor: pointer;
+
+    transition:
+        background 180ms ease,
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
+}
+
+button:hover {
+    transform: translateY(-1px);
+
+    border-color: var(--dourado-claro);
+
+    background: linear-gradient(
+        180deg,
+        #514027,
+        #342617
+    );
+
+    box-shadow:
+        0 0 16px rgba(201, 164, 92, 0.1);
+}
+
+button:focus-visible {
+    outline: 2px solid var(--dourado-claro);
+    outline-offset: 3px;
+}
+
+.jogo {
+    width: min(1100px, 92%);
+    margin: 0 auto;
+
+    padding: 35px 0 55px;
+}
+
+/* CABEÇALHO */
+
+.cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 28px;
+    padding-bottom: 22px;
+
+    border-bottom: 1px solid var(--borda);
+}
+
+.cabecalho h1 {
+    margin: 0;
+
+    color: var(--dourado-claro);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(27px, 4vw, 36px);
+    font-weight: normal;
+    letter-spacing: 0.5px;
+}
+
+.cabecalho p {
+    margin: 8px 0 0;
+
+    color: var(--texto-suave);
+    line-height: 1.5;
+}
+
+#botao-personagem {
+    width: auto;
+    flex-shrink: 0;
+}
+
+/* PAINÉIS PRINCIPAIS */
+
+.informacoes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.painel {
+    position: relative;
+    min-width: 0;
+
+    padding: 22px;
+
+    border: 1px solid var(--borda);
+    border-radius: 7px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.018),
+            transparent 55%
+        ),
+        var(--painel);
+
+    box-shadow:
+        0 8px 22px var(--sombra),
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.painel h2 {
+    margin: 0 0 18px;
+    padding-bottom: 12px;
+
+    border-bottom: 1px solid rgba(157, 123, 64, 0.35);
+
+    color: var(--dourado-claro);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 21px;
+    font-weight: normal;
+}
+
+.painel p {
+    line-height: 1.6;
+}
+
+.painel strong {
+    color: var(--dourado-claro);
+}
+
+/* PERFIL DO PERSONAGEM */
+
+.personagem h3 {
+    margin-bottom: 18px;
+}
+
+.perfil-personagem {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    margin-top: 18px;
+}
+
+.retrato-personagem {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 120px;
+    min-width: 120px;
+    height: 158px;
+
+    overflow: hidden;
+
+    border: 2px solid var(--borda-dourada);
+    border-radius: 5px;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            #403322 0%,
+            #191714 65%,
+            #0b0b0b 100%
+        );
+
+    box-shadow:
+        inset 0 0 0 4px #17130e,
+        0 0 16px rgba(0, 0, 0, 0.4);
+}
+
+.retrato-personagem::before {
+    position: absolute;
+    z-index: 2;
+
+    inset: 5px;
+
+    border: 1px solid rgba(201, 164, 92, 0.45);
+
+    content: "";
+    pointer-events: none;
+}
+
+.retrato-placeholder {
+    position: absolute;
+
+    color: var(--dourado);
+    font-size: 42px;
+    opacity: 0.75;
+}
+
+.retrato-personagem img {
+    position: absolute;
+    z-index: 1;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    object-position: center top;
+}
+
+.dados-personagem {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.dados-personagem h3 {
+    margin-top: 0;
+    margin-bottom: 18px;
+
+    color: var(--dourado-claro);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.25rem;
+    font-weight: normal;
+}
+
+.dados-personagem p {
+    margin: 12px 0;
+
+    color: var(--texto-suave);
+}
+
+.dados-personagem strong {
+    color: var(--dourado-claro);
+}
+
+/* LOCALIZAÇÃO */
+
+.localizacao p {
+    margin: 14px 0;
+    color: var(--texto-suave);
+}
+
+.localizacao strong {
+    color: var(--dourado-claro);
+}
+
+/* LOCAL ATUAL */
+
+.local-atual {
+    min-height: 160px;
+    margin-top: 16px;
+}
+
+#descricao-local {
+    color: var(--texto-suave);
+    line-height: 1.8;
+}
+
+/* CAMINHOS E DESTINOS */
+
+.caminhos {
+    margin-top: 16px;
+}
+
+#destinos,
+.destinos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+}
+
+.destino {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+
+    padding: 18px;
+
+    border: 1px solid #453a28;
+    border-radius: 6px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(201, 164, 92, 0.035),
+            transparent 65%
+        ),
+        #121210;
+
+    transition:
+        border-color 180ms ease,
+        background 180ms ease,
+        transform 180ms ease;
+}
+
+.destino:hover {
+    transform: translateY(-2px);
+
+    border-color: var(--borda-dourada);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(201, 164, 92, 0.07),
+            transparent 65%
+        ),
+        #191713;
+}
+
+.destino h3 {
+    margin: 0 0 12px;
+
+    color: var(--dourado-claro);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 19px;
+    font-weight: normal;
+}
+
+.destino p {
+    flex: 1;
+
+    margin: 0 0 18px;
+
+    color: var(--texto-suave);
+    line-height: 1.7;
+}
+
+.destino button {
+    width: 100%;
+    margin-top: auto;
+}
+
+/* TELAS MENORES */
+
+@media (max-width: 700px) {
+    .jogo {
+        width: 92%;
+        padding-top: 25px;
+    }
+
+    .cabecalho {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    #botao-personagem {
+        width: 100%;
+    }
+
+    .informacoes {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .painel {
+        padding: 17px;
+    }
+
+    .perfil-personagem {
+        gap: 14px;
+    }
+
+    .retrato-personagem {
+        width: 95px;
+        min-width: 95px;
+        height: 132px;
+    }
+
+    .dados-personagem h3 {
+        font-size: 1.05rem;
+    }
+
+    #destinos,
+    .destinos {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+    }
+}

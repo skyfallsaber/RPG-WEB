@@ -1,0 +1,426 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha do Personagem | RPG Web</title>
+    <link rel="stylesheet" href="/estilos/personagem.css">
+</head>
+<body>
+    <main class="personagem-page">
+        <header class="cabecalho">
+            <div>
+                <p class="subtitulo">REGISTRO DO AVENTUREIRO</p>
+                <h1>Ficha do Personagem</h1>
+                <p>Seu progresso, atributos e jornada.</p>
+            </div>
+
+            <button
+                class="botao-secundario"
+                id="voltar-inicio"
+                type="button"
+            >
+                Voltar à aventura
+            </button>
+        </header>
+
+        <section class="painel perfil">
+            <div class="retrato">
+                <img
+                    src="/imagens/personagem-retrato.png"
+                    alt="Retrato do personagem"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                >
+
+                <div class="retrato-reserva" style="display: none;">
+                    <span>✦</span>
+                    <small>RETRATO</small>
+                </div>
+            </div>
+
+            <div class="perfil-conteudo">
+                <p class="etiqueta">PERSONAGEM</p>
+
+                <h2 id="nome-personagem">Carregando...</h2>
+
+                <p class="classe-personagem" id="classe-personagem">
+                    Classe não definida
+                </p>
+
+                <div class="nivel-linha">
+                    <span>
+                        Nível <strong id="nivel">1</strong>
+                    </span>
+
+                    <span id="xp-texto">0 XP</span>
+                </div>
+
+                <div
+                    class="barra-progresso"
+                    role="progressbar"
+                    aria-label="Progresso de experiência"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="0"
+                    id="barra-xp"
+                >
+                    <div
+                        class="barra-progresso-preenchimento"
+                        id="xp-preenchimento"
+                    ></div>
+                </div>
+
+                <p class="texto-progresso" id="xp-detalhes">
+                    Preparando progresso...
+                </p>
+            </div>
+        </section>
+
+        <section class="painel">
+            <div class="titulo-painel">
+                <div>
+                    <p class="etiqueta">DESENVOLVIMENTO</p>
+                    <h2>Atributos</h2>
+                </div>
+
+                <span class="selo" id="pontos-usados">0 / 40</span>
+            </div>
+
+            <div class="resumo-atributos">
+                <div class="resumo-item">
+                    <span>Limite por atributo</span>
+                    <strong id="limite-atributo">12</strong>
+                </div>
+
+                <div class="resumo-item">
+                    <span>Pontos distribuídos</span>
+                    <strong id="pontos-resumo">0</strong>
+                </div>
+            </div>
+
+            <div id="atributos" class="lista"></div>
+        </section>
+
+        <section class="painel">
+            <div class="titulo-painel">
+                <div>
+                    <p class="etiqueta">APERFEIÇOAMENTO</p>
+                    <h2>Maestrias</h2>
+                </div>
+            </div>
+
+            <div id="maestrias" class="lista"></div>
+        </section>
+
+        <section class="painel">
+            <div class="titulo-painel">
+                <div>
+                    <p class="etiqueta">SUA JORNADA</p>
+                    <h2>Localização atual</h2>
+                </div>
+
+                <span class="icone-localizacao">⌖</span>
+            </div>
+
+            <div class="localizacao-conteudo">
+                <div class="localizacao-item">
+                    <span>Região</span>
+                    <strong id="regiao-atual">Carregando...</strong>
+                </div>
+
+                <div class="localizacao-item">
+                    <span>Cidade</span>
+                    <strong id="cidade-atual">Carregando...</strong>
+                </div>
+
+                <div class="localizacao-item">
+                    <span>Local</span>
+                    <strong id="local-atual">Carregando...</strong>
+                </div>
+            </div>
+
+            <p class="aviso-mapa">
+                Explore o mundo, descubra novos lugares e avance pelos
+                caminhos conectados à sua localização atual.
+            </p>
+
+            <button
+                class="botao-secundario"
+                id="ver-no-mapa"
+                type="button"
+            >
+                Ver no mapa
+            </button>
+        </section>
+    </main>
+
+    <script type="module">
+        import {
+            carregarPersonagem
+        } from "/jogo/personagem/armazenamento.js";
+
+        import {
+            calcularPontosUsados
+        } from "/jogo/personagem/personagem.js";
+
+        import {
+            calcularLimiteAtributo,
+            calcularXpParaProximoNivel
+        } from "/configuracoes/progressao/personagem.js";
+
+        import {
+            obterRegiao,
+            obterCidade,
+            obterLocal
+        } from "/jogo/mundo/mundo.js";
+
+        const personagem = carregarPersonagem();
+
+        const botaoVoltar = document.getElementById("voltar-inicio");
+
+        botaoVoltar.addEventListener("click", () => {
+            window.location.href = "/telas/inicio.html";
+        });
+
+        if (!personagem) {
+            document.querySelector(".personagem-page").innerHTML = `
+                <section class="painel erro-personagem">
+                    <h1>Nenhum personagem encontrado</h1>
+                    <p>
+                        Crie um personagem antes de consultar esta ficha.
+                    </p>
+
+                    <button
+                        class="botao-secundario"
+                        id="voltar-criacao"
+                        type="button"
+                    >
+                        Ir para criação de personagem
+                    </button>
+                </section>
+            `;
+
+            document
+                .getElementById("voltar-criacao")
+                .addEventListener("click", () => {
+                    window.location.href =
+                        "/telas/criacao-personagem.html";
+                });
+        } else {
+            mostrarPersonagem();
+            mostrarAtributos();
+            mostrarMaestrias();
+            mostrarLocalizacao();
+
+            const botaoMapa = document.getElementById("ver-no-mapa");
+
+            if (botaoMapa) {
+                botaoMapa.addEventListener("click", () => {
+                    window.location.href = "/telas/mapa.html";
+                });
+            }
+        }
+
+        function formatarNumero(numero) {
+            return Number(numero).toLocaleString("pt-BR");
+        }
+
+        function calcularXpTotalParaNivel(nivel) {
+            let total = 0;
+
+            for (
+                let nivelAtual = 1;
+                nivelAtual < nivel;
+                nivelAtual++
+            ) {
+                total += calcularXpParaProximoNivel(nivelAtual);
+            }
+
+            return total;
+        }
+
+        function mostrarPersonagem() {
+            document.getElementById("nome-personagem").textContent =
+                personagem.nome || "Aventureiro";
+
+            document.getElementById("nivel").textContent =
+                personagem.nivel;
+
+            document.getElementById("classe-personagem").textContent =
+                personagem.classe || "Classe não definida";
+
+            const xpAtual = Number(personagem.xp) || 0;
+            const nivelAtual = Number(personagem.nivel) || 1;
+
+            const xpInicioNivel =
+                calcularXpTotalParaNivel(nivelAtual);
+
+            const xpProximoNivel =
+                calcularXpTotalParaNivel(nivelAtual + 1);
+
+            const xpNecessario =
+                xpProximoNivel - xpInicioNivel;
+
+            const xpProgresso =
+                Math.max(0, xpAtual - xpInicioNivel);
+
+            const percentual = xpNecessario > 0
+                ? Math.min(
+                    100,
+                    Math.max(
+                        0,
+                        (xpProgresso / xpNecessario) * 100
+                    )
+                )
+                : 0;
+
+            document.getElementById("xp-texto").textContent =
+                `${formatarNumero(xpAtual)} XP`;
+
+            document.getElementById("xp-preenchimento").style.width =
+                `${percentual}%`;
+
+            document.getElementById("barra-xp").setAttribute(
+                "aria-valuenow",
+                String(Math.round(percentual))
+            );
+
+            document.getElementById("xp-detalhes").textContent =
+                `${formatarNumero(xpProgresso)} / ` +
+                `${formatarNumero(xpNecessario)} XP neste nível`;
+        }
+
+        function mostrarAtributos() {
+            const container = document.getElementById("atributos");
+            container.innerHTML = "";
+
+            const atributos = personagem.atributos || {};
+
+            const limite =
+                calcularLimiteAtributo(personagem.nivel);
+
+            const pontosUsados =
+                calcularPontosUsados(atributos);
+
+            document.getElementById("limite-atributo").textContent =
+                limite;
+
+            document.getElementById("pontos-resumo").textContent =
+                pontosUsados;
+
+            document.getElementById("pontos-usados").textContent =
+                `${pontosUsados} / 40`;
+
+            for (const [nome, valor] of Object.entries(atributos)) {
+                const item = document.createElement("div");
+                item.className = "item item-atributo";
+
+                const cabecalho = document.createElement("div");
+                cabecalho.className = "atributo-cabecalho";
+
+                const nomeAtributo = document.createElement("span");
+                nomeAtributo.className = "nome-atributo";
+                nomeAtributo.textContent = nome;
+
+                const valorAtributo = document.createElement("strong");
+                valorAtributo.textContent = `${valor} / ${limite}`;
+
+                cabecalho.append(
+                    nomeAtributo,
+                    valorAtributo
+                );
+
+                const barra = document.createElement("div");
+                barra.className = "barra-atributo";
+
+                const preenchimento = document.createElement("div");
+                preenchimento.className =
+                    "barra-atributo-preenchimento";
+
+                preenchimento.style.width =
+                    `${limite > 0
+                        ? Math.min(100, (valor / limite) * 100)
+                        : 0}%`;
+
+                barra.appendChild(preenchimento);
+                item.append(cabecalho, barra);
+                container.appendChild(item);
+            }
+        }
+
+        function mostrarMaestrias() {
+            const container = document.getElementById("maestrias");
+            container.innerHTML = "";
+
+            const maestrias = personagem.maestrias || {};
+            const entradas = Object.entries(maestrias);
+
+            if (entradas.length === 0) {
+                container.textContent =
+                    "Nenhuma maestria disponível.";
+                return;
+            }
+
+            for (const [nome, maestria] of entradas) {
+                const item = document.createElement("div");
+                item.className = "item item-maestria";
+
+                const nomeMaestria = document.createElement("span");
+                nomeMaestria.className = "nome-atributo";
+                nomeMaestria.textContent = nome;
+
+                const detalhes = document.createElement("div");
+                detalhes.className = "detalhes-maestria";
+
+                const pontos = document.createElement("strong");
+                pontos.textContent =
+                    `${maestria.pontosAcumulados ?? 0} ponto(s)`;
+
+                const xp = document.createElement("span");
+                xp.className = "maestria-xp";
+                xp.textContent =
+                    `${formatarNumero(maestria.xp ?? 0)} XP`;
+
+                detalhes.append(pontos, xp);
+                item.append(nomeMaestria, detalhes);
+                container.appendChild(item);
+            }
+        }
+
+        function mostrarLocalizacao() {
+            const localizacao = personagem.localizacao;
+
+            if (!localizacao) {
+                definirLocalizacaoIndisponivel();
+                return;
+            }
+
+            const regiao = obterRegiao(localizacao.regiaoId);
+            const cidade = obterCidade(localizacao.cidadeId);
+            const local = obterLocal(localizacao.localId);
+
+            document.getElementById("regiao-atual").textContent =
+                regiao?.nome || "Região desconhecida";
+
+            document.getElementById("cidade-atual").textContent =
+                cidade?.nome || "Área externa";
+
+            document.getElementById("local-atual").textContent =
+                local?.nome || "Local desconhecido";
+        }
+
+        function definirLocalizacaoIndisponivel() {
+            document.getElementById("regiao-atual").textContent =
+                "Indisponível";
+
+            document.getElementById("cidade-atual").textContent =
+                "Indisponível";
+
+            document.getElementById("local-atual").textContent =
+                "Indisponível";
+        }
+    </script>
+</body>
+</html>
+```

@@ -1,0 +1,346 @@
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    color-scheme: dark;
+    --fundo: #111;
+    --painel: #191919;
+    --painel-interno: #151515;
+    --borda: #3c3527;
+    --dourado: #c9a54c;
+    --dourado-claro: #f0d58a;
+    --texto: #eee;
+    --texto-secundario: #aaa;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background:
+        radial-gradient(ellipse at top, #242016 0%, transparent 55%),
+        var(--fundo);
+    color: var(--texto);
+}
+
+button {
+    font: inherit;
+    cursor: pointer;
+}
+
+.mapa-page {
+    width: min(1050px, 92%);
+    margin: 0 auto;
+    padding: 35px 0 25px;
+}
+
+.cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.cabecalho h1 {
+    margin: 7px 0;
+    color: var(--dourado-claro);
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+}
+
+.etiqueta {
+    margin: 0;
+    color: var(--dourado);
+    font-size: 0.72rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.descricao-cabecalho {
+    margin: 8px 0 0;
+    color: var(--texto-secundario);
+    line-height: 1.5;
+}
+
+.acoes-cabecalho {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.botao-secundario {
+    padding: 11px 15px;
+    border: 1px solid #80672f;
+    border-radius: 6px;
+    background: #211d14;
+    color: var(--dourado-claro);
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.botao-secundario:hover,
+.botao-viajar:hover {
+    background: #342a17;
+    border-color: var(--dourado);
+}
+
+.painel {
+    padding: 24px;
+    margin-bottom: 18px;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    background: linear-gradient(145deg, #1d1d1b, var(--painel));
+    box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+}
+
+.local-atual {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 28px;
+}
+
+.icone-local {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 76px;
+    height: 76px;
+    border: 1px solid var(--dourado);
+    border-radius: 10px;
+    background: #241f14;
+    color: var(--dourado-claro);
+    font-size: 2.6rem;
+}
+
+.local-atual-info {
+    min-width: 0;
+}
+
+.local-atual-info h2 {
+    margin: 7px 0;
+    color: var(--dourado-claro);
+    font-size: 1.6rem;
+}
+
+.local-atual-info > p:not(.etiqueta) {
+    margin: 8px 0 12px;
+    color: #ccc;
+    line-height: 1.5;
+}
+
+.caminho-atual {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: var(--texto-secundario);
+    font-size: 0.85rem;
+}
+
+.separador {
+    color: var(--dourado);
+}
+
+.titulo-painel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.titulo-painel h2 {
+    margin: 7px 0 0;
+    color: var(--dourado-claro);
+    font-size: 1.35rem;
+}
+
+.contador {
+    padding: 8px 11px;
+    border: 1px solid #6c572c;
+    border-radius: 6px;
+    background: #241f14;
+    color: var(--dourado-claro);
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.lista-destinos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.cartao-destino {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid #34312a;
+    border-radius: 8px;
+    background: var(--painel-interno);
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.cartao-destino:hover {
+    border-color: #80672f;
+    transform: translateY(-2px);
+}
+
+.icone-destino {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid #514326;
+    border-radius: 7px;
+    background: #211d14;
+    color: var(--dourado-claro);
+    font-size: 1.7rem;
+}
+
+.conteudo-destino {
+    flex: 1;
+    min-width: 0;
+}
+
+.conteudo-destino h3 {
+    margin: 0 0 7px;
+    color: #eee;
+    font-size: 1rem;
+    overflow-wrap: anywhere;
+}
+
+.conteudo-destino p {
+    margin: 0;
+    color: var(--texto-secundario);
+    font-size: 0.83rem;
+    line-height: 1.45;
+}
+
+.botao-viajar {
+    padding: 9px 12px;
+    border: 1px solid #80672f;
+    border-radius: 5px;
+    background: #211d14;
+    color: var(--dourado-claro);
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.mensagem-mapa {
+    min-height: 0;
+    margin: 12px 0 0;
+    color: var(--dourado-claro);
+    font-size: 0.9rem;
+}
+
+.mensagem-erro {
+    color: #ff9696;
+}
+
+.sem-destinos {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 20px;
+    border: 1px dashed #514326;
+    border-radius: 7px;
+    color: var(--texto-secundario);
+    line-height: 1.5;
+    text-align: center;
+}
+
+.rodape {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 5px 0 20px;
+    color: var(--texto-secundario);
+    font-size: 0.8rem;
+}
+
+.rodape span:first-child {
+    color: var(--dourado);
+    font-weight: bold;
+}
+
+.erro-mapa {
+    margin-top: 50px;
+    text-align: center;
+}
+
+.erro-mapa p {
+    color: var(--texto-secundario);
+    line-height: 1.5;
+}
+
+.erro-mapa button {
+    margin-top: 10px;
+}
+
+@media (max-width: 800px) {
+    .cabecalho {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .acoes-cabecalho {
+        width: 100%;
+    }
+
+    .acoes-cabecalho button {
+        flex: 1;
+    }
+
+    .lista-destinos {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 520px) {
+    .mapa-page {
+        width: 94%;
+        padding-top: 22px;
+    }
+
+    .painel {
+        padding: 17px;
+    }
+
+    .local-atual {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .icone-local {
+        width: 58px;
+        height: 58px;
+        font-size: 2rem;
+    }
+
+    .titulo-painel {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .cartao-destino {
+        flex-wrap: wrap;
+    }
+
+    .conteudo-destino {
+        flex-basis: calc(100% - 65px);
+    }
+
+    .botao-viajar {
+        width: 100%;
+    }
+
+    .rodape {
+        flex-direction: column;
+    }
+}

@@ -1,0 +1,308 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Criação de Personagem | RPG Web</title>
+
+    <link
+        rel="stylesheet"
+        href="/estilos/criacao-personagem.css"
+    >
+</head>
+
+<body>
+
+    <main class="criacao-page">
+
+        <header class="page-header">
+            <p class="sobretitulo">✦ FORJE SEU DESTINO ✦</p>
+
+            <h1>Criação de Personagem</h1>
+
+            <p class="subtitulo">
+                Uma nova jornada começa. Escolha quem você será.
+            </p>
+        </header>
+
+        <section class="painel identidade">
+            <div class="titulo-painel">
+                <span class="simbolo">✧</span>
+                <h2>Identidade do herói</h2>
+            </div>
+
+            <label for="nome">Nome do personagem</label>
+
+            <input
+                type="text"
+                id="nome"
+                maxlength="30"
+                placeholder="Digite o nome do seu herói..."
+                autocomplete="off"
+            >
+        </section>
+
+        <section class="painel painel-atributos">
+
+            <div class="cabecalho-atributos">
+                <div class="titulo-painel">
+                    <span class="simbolo">⚔</span>
+                    <div>
+                        <h2>Atributos</h2>
+                        <p class="descricao-painel">
+                            Distribua os pontos para definir seu potencial.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pontos-box">
+                    <span>Pontos disponíveis</span>
+                    <strong id="pontos-restantes">40</strong>
+                </div>
+            </div>
+
+            <div class="grade-atributos">
+
+                <div class="atributo">
+                    <span class="nome-atributo">Força</span>
+                    <div class="controles-atributo">
+                        <button type="button" aria-label="Diminuir Força"
+                            onclick="alterarAtributo('forca', -1)">−</button>
+                        <strong id="forca">0</strong>
+                        <button type="button" aria-label="Aumentar Força"
+                            onclick="alterarAtributo('forca', 1)">+</button>
+                    </div>
+                </div>
+
+                <div class="atributo">
+                    <span class="nome-atributo">Destreza</span>
+                    <div class="controles-atributo">
+                        <button type="button" aria-label="Diminuir Destreza"
+                            onclick="alterarAtributo('destreza', -1)">−</button>
+                        <strong id="destreza">0</strong>
+                        <button type="button" aria-label="Aumentar Destreza"
+                            onclick="alterarAtributo('destreza', 1)">+</button>
+                    </div>
+                </div>
+
+                <div class="atributo">
+                    <span class="nome-atributo">Agilidade</span>
+                    <div class="controles-atributo">
+                        <button type="button" aria-label="Diminuir Agilidade"
+                            onclick="alterarAtributo('agilidade', -1)">−</button>
+                        <strong id="agilidade">0</strong>
+                        <button type="button" aria-label="Aumentar Agilidade"
+                            onclick="alterarAtributo('agilidade', 1)">+</button>
+                    </div>
+                </div>
+
+                <div class="atributo">
+                    <span class="nome-atributo">Constituição</span>
+                    <div class="controles-atributo">
+                        <button type="button" aria-label="Diminuir Constituição"
+                            onclick="alterarAtributo('constituicao', -1)">−</button>
+                        <strong id="constituicao">0</strong>
+                        <button type="button" aria-label="Aumentar Constituição"
+                            onclick="alterarAtributo('constituicao', 1)">+</button>
+                    </div>
+                </div>
+
+                <div class="atributo">
+                    <span class="nome-atributo">Inteligência</span>
+                    <div class="controles-atributo">
+                        <button type="button" aria-label="Diminuir Inteligência"
+                            onclick="alterarAtributo('inteligencia', -1)">−</button>
+                        <strong id="inteligencia">0</strong>
+                        <button type="button" aria-label="Aumentar Inteligência"
+                            onclick="alterarAtributo('inteligencia', 1)">+</button>
+                    </div>
+                </div>
+
+                <div class="atributo">
+                    <span class="nome-atributo">Sabedoria</span>
+                    <div class="controles-atributo">
+                        <button type="button" aria-label="Diminuir Sabedoria"
+                            onclick="alterarAtributo('sabedoria', -1)">−</button>
+                        <strong id="sabedoria">0</strong>
+                        <button type="button" aria-label="Aumentar Sabedoria"
+                            onclick="alterarAtributo('sabedoria', 1)">+</button>
+                    </div>
+                </div>
+
+                <div class="atributo">
+                    <span class="nome-atributo">Carisma</span>
+                    <div class="controles-atributo">
+                        <button type="button" aria-label="Diminuir Carisma"
+                            onclick="alterarAtributo('carisma', -1)">−</button>
+                        <strong id="carisma">0</strong>
+                        <button type="button" aria-label="Aumentar Carisma"
+                            onclick="alterarAtributo('carisma', 1)">+</button>
+                    </div>
+                </div>
+
+                <div class="atributo">
+                    <span class="nome-atributo">Sorte</span>
+                    <div class="controles-atributo">
+                        <button type="button" aria-label="Diminuir Sorte"
+                            onclick="alterarAtributo('sorte', -1)">−</button>
+                        <strong id="sorte">0</strong>
+                        <button type="button" aria-label="Aumentar Sorte"
+                            onclick="alterarAtributo('sorte', 1)">+</button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="painel informacoes-iniciais">
+
+            <div class="titulo-painel">
+                <span class="simbolo">◈</span>
+                <h2>Informações iniciais</h2>
+            </div>
+
+            <div class="resumo-personagem">
+                <div class="resumo-item">
+                    <span>Nível</span>
+                    <strong>1</strong>
+                </div>
+
+                <div class="resumo-item">
+                    <span>Experiência</span>
+                    <strong>0 XP</strong>
+                </div>
+
+                <div class="resumo-item">
+                    <span>Classe</span>
+                    <strong>Nenhuma</strong>
+                </div>
+            </div>
+
+            <p class="nota-classe">
+                Seu caminho ainda não foi definido.
+            </p>
+        </section>
+
+        <div class="acoes">
+            <button
+                type="button"
+                class="botao-criar"
+                onclick="criarPersonagem()"
+            >
+                <span>✦</span>
+                Criar Personagem
+                <span>✦</span>
+            </button>
+        </div>
+
+        <footer class="rodape">
+            RPG WEB <span>•</span> O começo da sua lenda
+        </footer>
+
+    </main>
+
+    <script type="module">
+    import {
+        criarAtributosIniciais,
+        alterarAtributo as alterarAtributoJogo,
+        calcularPontosUsados,
+        criarPersonagem as criarPersonagemJogo
+    } from "/jogo/personagem/personagem.js";
+
+    import {
+        salvarPersonagem
+    } from "/jogo/personagem/armazenamento.js";
+
+    const atributos = criarAtributosIniciais();
+    window.debugAtributos = atributos;
+
+    window.alterarAtributo = function(atributo, quantidade) {
+        const resultado = alterarAtributoJogo(
+            atributos,
+            atributo,
+            quantidade
+        );
+
+        if (!resultado.sucesso) {
+            alert(resultado.mensagem);
+            return;
+        }
+
+        document.getElementById(atributo).textContent =
+            atributos[atributo];
+
+        const pontosUsados =
+            calcularPontosUsados(atributos);
+
+        const pontosRestantes =
+            40 - pontosUsados;
+
+        document.getElementById(
+            "pontos-restantes"
+        ).textContent = pontosRestantes;
+    };
+
+    
+window.criarPersonagem = function() {
+    const nome = document.getElementById("nome").value;
+
+    const resultado = criarPersonagemJogo(nome, atributos);
+
+    if (!resultado.sucesso) {
+        alert(resultado.mensagem);
+        return;
+    }
+
+    salvarPersonagem(resultado.personagem);
+
+    console.log("Personagem salvo:", resultado.personagem);
+
+    alert(`Personagem ${resultado.personagem.nome} criado com sucesso!`);
+
+    window.location.href = "/telas/inicio.html";
+};
+
+</script>
+
+    <script type="module">
+
+        import {
+            criarAtributosIniciais,
+            calcularPontosUsados,
+            alterarAtributo,
+            criarPersonagem
+        } from "../../jogo/personagem/personagem.js";
+
+        import {
+            progressaoPersonagem
+        } from "../../../configuracoes/progressao/personagem.js";
+
+        const atributos = criarAtributosIniciais();
+
+        function atualizarInterface() {
+
+            for (const atributo in atributos) {
+
+                document.getElementById(atributo).textContent =
+                    atributos[atributo];
+
+            }
+
+            const pontosUsados =
+                calcularPontosUsados(atributos);
+
+            const pontosRestantes =
+                progressaoPersonagem.criacao.pontosIniciais -
+                pontosUsados;
+
+            document.getElementById("pontos-restantes").textContent =
+                pontosRestantes;
+        }
+
+    </script>
+
+</body>
+</html>
