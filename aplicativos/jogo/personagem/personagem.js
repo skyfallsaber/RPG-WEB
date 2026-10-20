@@ -84,32 +84,71 @@ if (novoValor > limiteAtributo) {
     };
 }
 
-export function validarCriacao(nome, atributos) {
 
-    if (!nome || nome.trim() === "") {
+export function validarCriacao(nome, atributos) {
+    if (typeof nome !== "string" || nome.trim() === "") {
         return {
             valido: false,
             mensagem: "O personagem precisa possuir um nome."
         };
     }
 
-    const pontosUsados = calcularPontosUsados(atributos);
-
     if (
-        pontosUsados !==
-        progressaoPersonagem.criacao.pontosIniciais
+        !atributos ||
+        typeof atributos !== "object" ||
+        Array.isArray(atributos)
     ) {
         return {
             valido: false,
-            mensagem:
-            `O personagem precisa utilizar exatamente ${progressaoPersonagem.criacao.pontosIniciais} pontos.`
+            mensagem: "Os atributos do personagem são inválidos."
         };
     }
 
-    return {
-        valido: true
-    };
+    const chaves = Object.keys(atributos);
+
+    if (
+        chaves.length !== ATRIBUTOS.length ||
+        !ATRIBUTOS.every(atributo =>
+            Object.hasOwn(atributos, atributo)
+        )
+    ) {
+        return {
+            valido: false,
+            mensagem: "A lista de atributos está incompleta ou contém atributos inválidos."
+        };
+    }
+
+    const limite = calcularLimiteAtributo(
+        progressaoPersonagem.nivel.nivelInicial
+    );
+
+    for (const atributo of ATRIBUTOS) {
+        const valor = atributos[atributo];
+
+        if (
+            !Number.isInteger(valor) ||
+            valor < 0 ||
+            valor > limite
+        ) {
+            return {
+                valido: false,
+                mensagem: `O atributo ${atributo} deve ser um número inteiro entre 0 e ${limite}.`
+            };
+        }
+    }
+
+    const pontosUsados = calcularPontosUsados(atributos);
+
+    if (pontosUsados !== progressaoPersonagem.criacao.pontosIniciais) {
+        return {
+            valido: false,
+            mensagem: `O personagem precisa utilizar exatamente ${progressaoPersonagem.criacao.pontosIniciais} pontos.`
+        };
+    }
+
+    return { valido: true };
 }
+
 
 export function criarPersonagem(nome, atributos) {
 

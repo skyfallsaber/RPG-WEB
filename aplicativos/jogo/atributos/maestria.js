@@ -52,6 +52,17 @@ export function adicionarExperienciaMaestria(
     atributo,
     quantidade = configuracaoMaestria.xpPorAcao
 ) {
+    
+    if (
+        !Number.isFinite(quantidade) ||
+        quantidade <= 0
+    ) {
+        return {
+            sucesso: false,
+            mensagem: "A quantidade de experiência deve ser maior que 0."
+        };
+    }
+
     if (!(atributo in maestrias)) {
         return {
             sucesso: false,
