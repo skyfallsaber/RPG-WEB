@@ -35,6 +35,11 @@
             >
                 Personagem
             </button>
+            
+            <button id="botao-combate" type="button">
+                Combater Lobo da Floresta
+            </button>
+
 
         </header>
 
@@ -128,6 +133,12 @@
     </main>
 
     <script type="module">
+        
+        document.getElementById("botao-combate")
+            .addEventListener("click", () => {
+            window.location.href = "/telas/combate.html";
+        });
+
 
         import {
             carregarPersonagem

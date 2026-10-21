@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Combate | RPG Web</title>
+
+    <link rel="stylesheet" href="/estilos/combate.css">
+    <script type="module" src="/scripts/combate.js"></script>
+</head>
+
+<body>
+    <main class="arena">
+
+        <header class="cabecalho">
+            <div>
+                <p class="sobretitulo">RPG WEB</p>
+                <h1>Combate</h1>
+                <p>Prepare-se para a batalha.</p>
+            </div>
+
+            <button id="botao-voltar" class="botao-secundario" type="button">
+                Voltar à aventura
+            </button>
+        </header>
+
+        <section class="painel-combate">
+            <p id="mensagem-status" class="mensagem-status" aria-live="polite">
+                Preparando combate...
+            </p>
+
+            <div class="combatentes">
+
+                <article class="combatente">
+                    <div class="simbolo-personagem" aria-hidden="true">⚔</div>
+                    <p class="tipo-combatente">Aventureiro</p>
+                    <h2 id="nome-personagem">Carregando...</h2>
+
+                    <div class="barra-vida">
+                        <div id="barra-vida-personagem" class="preenchimento vida-personagem"></div>
+                    </div>
+
+                    <p class="texto-vida" id="vida-personagem">—</p>
+                </article>
+
+                <div class="separador-combate" aria-hidden="true">VS</div>
+
+                <article class="combatente">
+                    <div class="simbolo-monstro" aria-hidden="true">🐺</div>
+                    <p class="tipo-combatente">Inimigo</p>
+                    <h2 id="nome-monstro">Lobo da Floresta</h2>
+
+                    <div class="barra-vida">
+                        <div id="barra-vida-monstro" class="preenchimento vida-monstro"></div>
+                    </div>
+
+                    <p class="texto-vida" id="vida-monstro">—</p>
+                </article>
+
+            </div>
+
+            <section class="acoes">
+                <h2 id="titulo-acao">Sua vez de agir</h2>
+                <p id="descricao-acao">Ataque o inimigo para continuar.</p>
+
+                <button id="botao-acao" class="botao-ataque" type="button" disabled>
+                    Atacar
+                </button>
+            </section>
+        </section>
+
+        <section class="painel-historico">
+            <h2>Registro de combate</h2>
+            <ol id="registro-combate" aria-live="polite">
+                <li>Preparando a batalha...</li>
+            </ol>
+        </section>
+
+    </main>
+</body>
+
+</html>

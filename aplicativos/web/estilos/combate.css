@@ -1,0 +1,404 @@
+
+:root {
+    color-scheme: dark;
+
+    --fundo: #0b0b0c;
+    --painel: #171613;
+    --painel-secundario: #201c16;
+
+    --borda: #55452b;
+    --borda-dourada: #9d7b40;
+
+    --dourado: #c9a45c;
+    --dourado-claro: #f0d8a0;
+
+    --texto: #e8e0d1;
+    --texto-suave: #aaa08f;
+
+    --sombra: rgba(0, 0, 0, 0.4);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: var(--texto);
+
+    background:
+        radial-gradient(
+            ellipse at 50% 0%,
+            rgba(116, 83, 39, 0.12),
+            transparent 55%
+        ),
+        linear-gradient(
+            180deg,
+            #11100e 0%,
+            var(--fundo) 100%
+        );
+}
+
+button {
+    border: 1px solid var(--borda-dourada);
+    border-radius: 5px;
+    padding: 12px 18px;
+
+    background: linear-gradient(
+        180deg,
+        #3b2e1c,
+        #241b11
+    );
+
+    color: var(--dourado-claro);
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+
+    transition:
+        background 180ms ease,
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
+}
+
+button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: var(--dourado-claro);
+
+    background: linear-gradient(
+        180deg,
+        #514027,
+        #342617
+    );
+
+    box-shadow: 0 0 16px rgba(201, 164, 92, 0.1);
+}
+
+button:focus-visible {
+    outline: 2px solid var(--dourado-claro);
+    outline-offset: 3px;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.arena {
+    width: min(1100px, 92%);
+    margin: 0 auto;
+    padding: 35px 0 55px;
+}
+
+.cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 28px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--borda);
+}
+
+.cabecalho h1 {
+    margin: 0;
+
+    color: var(--dourado-claro);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(27px, 4vw, 36px);
+    font-weight: normal;
+    letter-spacing: 0.5px;
+}
+
+.cabecalho p {
+    margin: 8px 0 0;
+    color: var(--texto-suave);
+    line-height: 1.5;
+}
+
+.sobretitulo {
+    color: var(--dourado) !important;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.botao-secundario {
+    flex-shrink: 0;
+}
+
+.painel-combate,
+.painel-historico {
+    position: relative;
+    min-width: 0;
+    padding: clamp(18px, 4vw, 26px);
+
+    border: 1px solid var(--borda);
+    border-radius: 7px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.018),
+            transparent 55%
+        ),
+        var(--painel);
+
+    box-shadow:
+        0 8px 22px var(--sombra),
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.mensagem-status {
+    min-height: 24px;
+    margin: 0 0 24px;
+    color: var(--dourado-claro);
+    text-align: center;
+    line-height: 1.6;
+    font-weight: bold;
+}
+
+.combatentes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: stretch;
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.combatente {
+    min-width: 0;
+    padding: 22px 18px;
+
+    border: 1px solid #453a28;
+    border-radius: 6px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(201, 164, 92, 0.035),
+            transparent 65%
+        ),
+        #121210;
+
+    text-align: center;
+}
+
+.simbolo-personagem,
+.simbolo-monstro {
+    display: grid;
+    place-items: center;
+
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 18px;
+
+    border: 1px solid var(--borda-dourada);
+    border-radius: 5px;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            #403322 0%,
+            #191714 70%,
+            #0b0b0b 100%
+        );
+
+    box-shadow:
+        inset 0 0 0 4px #17130e,
+        0 0 16px rgba(0, 0, 0, 0.4);
+
+    font-size: 3rem;
+}
+
+.simbolo-monstro {
+    background:
+        radial-gradient(
+            ellipse at center,
+            #452b22 0%,
+            #211511 70%,
+            #0b0b0b 100%
+        );
+}
+
+.tipo-combatente {
+    margin: 0;
+    color: var(--dourado);
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.combatente h2 {
+    min-height: 28px;
+    margin: 10px 0 20px;
+
+    color: var(--dourado-claro);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+    font-weight: normal;
+    overflow-wrap: anywhere;
+}
+
+.barra-vida {
+    width: 100%;
+    height: 14px;
+    overflow: hidden;
+
+    border: 1px solid #55452b;
+    border-radius: 3px;
+    background: #0b0b0b;
+}
+
+.preenchimento {
+    width: 100%;
+    height: 100%;
+    transition: width 250ms ease;
+}
+
+.vida-personagem {
+    background: linear-gradient(90deg, #55763b, #92b95c);
+    box-shadow: 0 0 10px rgba(125, 169, 75, 0.2);
+}
+
+.vida-monstro {
+    background: linear-gradient(90deg, #8d2925, #d65342);
+    box-shadow: 0 0 10px rgba(214, 83, 66, 0.2);
+}
+
+.texto-vida {
+    margin: 10px 0 0;
+    color: var(--texto-suave);
+    font-size: 0.85rem;
+}
+
+.separador-combate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--dourado);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.acoes {
+    padding-top: 24px;
+    border-top: 1px solid rgba(157, 123, 64, 0.35);
+    text-align: center;
+}
+
+.acoes h2,
+.painel-historico h2 {
+    color: var(--dourado-claro);
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: normal;
+}
+
+.acoes h2 {
+    margin: 0 0 10px;
+    font-size: 1.4rem;
+}
+
+.acoes p {
+    color: var(--texto-suave);
+    line-height: 1.6;
+}
+
+.botao-ataque {
+    min-width: 190px;
+    margin-top: 12px;
+}
+
+.painel-historico {
+    margin-top: 18px;
+}
+
+.painel-historico h2 {
+    margin: 0 0 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(157, 123, 64, 0.35);
+    font-size: 1.3rem;
+}
+
+#registro-combate {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    margin: 0;
+    padding-left: 24px;
+
+    color: var(--texto-suave);
+    line-height: 1.7;
+}
+
+#registro-combate li {
+    padding-left: 4px;
+}
+
+#registro-combate li::marker {
+    color: var(--dourado);
+}
+
+@media (max-width: 700px) {
+    .arena {
+        width: 92%;
+        padding-top: 25px;
+    }
+
+    .cabecalho {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .botao-secundario,
+    .botao-ataque {
+        width: 100%;
+    }
+
+    .combatentes {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+        margin: 20px 0;
+    }
+
+    .combatente {
+        padding: 18px;
+    }
+
+    .simbolo-personagem,
+    .simbolo-monstro {
+        width: 76px;
+        height: 76px;
+        font-size: 2.4rem;
+    }
+
+    .separador-combate {
+        padding: 4px;
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .painel-combate,
+    .painel-historico {
+        padding: 15px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}

@@ -1,204 +1,392 @@
-Sistema de Personagem — V1
-1. Objetivo
+# Sistema de Personagem — RPG Web
 
-O sistema de personagem define a estrutura básica dos personagens jogáveis e sua progressão inicial.
+**Versão da documentação:** V1  
+**Status:** Sistema em desenvolvimento  
+**Projeto:** RPG Web
 
-A V1 deve permitir que o jogador construa seu personagem livremente, sem ser obrigado a escolher uma classe durante a criação.
+## 1. Objetivo do sistema
 
-A filosofia principal é:
+O sistema de personagem deve permitir que o jogador desenvolva seu próprio estilo de jogo por meio da distribuição de atributos, da evolução individual de suas capacidades, da experiência adquirida e, futuramente, do desbloqueio de classes e habilidades.
 
-O jogador constrói seu personagem. A classe é conquistada durante o jogo, não escolhida obrigatoriamente no início.
+O personagem não deve ser limitado a uma classe obrigatória escolhida no início. A proposta é permitir que cada jogador construa sua própria trajetória dentro do mundo.
 
-2. Estado inicial do personagem
+**Princípio central:**
 
-Todo personagem criado na V1 começa com:
+> O jogador constrói seu personagem. A classe é conquistada durante o jogo, não escolhida obrigatoriamente no início.
 
-Nível: 1
-XP: 0
-Classe: nenhuma
-40 pontos iniciais para distribuição entre atributos
+O sistema deve ser modular, expansível e preparado para receber novos atributos, habilidades, classes, equipamentos e formas de progressão sem exigir a reescrita de toda a estrutura.
 
-O personagem começa sua jornada sem uma classe especializada.
+## 2. Filosofia de desenvolvimento do personagem
 
-3. Atributos
+O desenvolvimento do personagem deve seguir algumas diretrizes:
 
-Os atributos utilizados inicialmente são:
+- Liberdade para desenvolver diferentes estilos de combate e exploração.
+- Evolução gradual por experiência, prática e utilização das capacidades.
+- Separação entre o nível geral do personagem e a maestria de cada atributo.
+- Classes conquistadas por meio da progressão, e não impostas na criação.
+- Possibilidade futura de combinar habilidades de diferentes áreas.
+- Regras de jogo separadas dos dados que definem os conteúdos.
+- Evolução planejada para permitir que o jogo cresça sem tornar a estrutura desorganizada.
 
-Força
-Destreza
-Agilidade
-Constituição
-Inteligência
-Sabedoria
-Carisma
-Sorte
-Distribuição inicial
+As regras numéricas devem ser definidas de maneira explícita e testável. Ideias ainda não aprovadas não devem ser transformadas em regras definitivas apenas por estarem descritas nesta documentação.
 
-O jogador recebe 40 pontos para distribuir livremente entre os atributos.
+## 3. Criação inicial do personagem
 
-Durante a criação inicial, cada atributo possui limite máximo de 12 pontos.
+### 3.1. Estado inicial definido
 
-O limite de 12 é referente à distribuição inicial dos atributos.
+O personagem começa com as seguintes características:
 
-Os efeitos detalhados de cada atributo ainda serão definidos.
+| Característica | Valor inicial |
+|---|---:|
+| Nível | 1 |
+| Experiência | 0 XP |
+| Classe | Nenhuma |
+| Pontos para distribuir | 40 |
+| Limite inicial por atributo | 12 |
 
-4. Classes
+O jogador distribui os 40 pontos entre os oito atributos disponíveis, respeitando o limite individual de 12 pontos durante a criação inicial.
 
-Na criação do personagem não existe escolha obrigatória de classe.
+A soma dos pontos distribuídos deve respeitar as regras de validação do sistema. Valores negativos, atributos acima do limite e distribuições inválidas não devem ser aceitos.
 
-O personagem começa como:
+### 3.2. Atributos disponíveis
 
-Classe: nenhuma
+O personagem possui oito atributos principais:
 
-As classes serão desbloqueadas durante a progressão do personagem.
+1. **Força:** representa o potencial físico de força.
+2. **Destreza:** representa a precisão e o controle dos movimentos.
+3. **Agilidade:** representa a capacidade de movimentação e a velocidade.
+4. **Constituição:** representa a resistência física.
+5. **Inteligência:** representa capacidades intelectuais e conhecimentos.
+6. **Sabedoria:** representa conhecimento prático, percepção e possíveis afinidades com natureza, cura ou energia.
+7. **Carisma:** representa a capacidade de interação e influência social.
+8. **Sorte:** representa a influência de fatores aleatórios em situações apropriadas.
 
-O desbloqueio poderá estar relacionado à maneira como o personagem evolui e joga, incluindo atributos, habilidades, missões, treinamentos e outros requisitos que serão definidos posteriormente.
+Essas descrições representam a intenção de design. Os efeitos exatos de cada atributo nas fórmulas do jogo ainda precisam ser definidos e documentados conforme forem aprovados.
 
-5. Filosofia das classes
+**Importante:** agilidade está associada à velocidade dentro do projeto, mas não se deve presumir que todos os seus efeitos numéricos já estejam definidos.
 
-As classes não devem limitar permanentemente o personagem.
+## 4. Sistema de atributos
 
-Uma classe representa uma especialização, identidade ou caminho de desenvolvimento, mas não deve impedir o jogador de aprender habilidades de outras áreas.
+Os atributos devem influenciar as capacidades do personagem durante a aventura.
 
-Por exemplo:
+Entre os efeitos possíveis estão:
 
-Um personagem que se torne Mago pode aprender técnicas de combate físico.
-Um personagem que se torne Guerreiro pode aprender magia.
-Um personagem pode desenvolver habilidades que normalmente não seriam associadas à sua classe.
+- Dano físico.
+- Precisão e eficiência de ataques.
+- Velocidade de ação.
+- Resistência a danos.
+- Capacidade de sobrevivência.
+- Eficiência em habilidades.
+- Interações sociais.
+- Resultados de atividades específicas.
 
-A classe deve orientar o desenvolvimento do personagem, mas não determinar tudo que ele pode aprender.
+Esses efeitos são possibilidades de design, não uma lista de fórmulas já implementadas.
 
-6. Progressão das classes
+Cada relação entre atributo e mecânica deve ser definida separadamente. Isso evita que uma alteração em um atributo provoque efeitos inesperados em sistemas independentes.
 
-As classes poderão possuir evoluções posteriores, chamadas inicialmente de trabalhos de classe.
+### 4.1. Limite de atributos
 
-O conceito geral é:
+O sistema já possui uma configuração de progressão que determina o limite permitido para os atributos de acordo com as regras de evolução.
 
-Personagem sem classe
-        ↓
-Desenvolvimento durante o jogo
-        ↓
-Desbloqueio de classe
-        ↓
-Trabalho de classe
-        ↓
-Evoluções posteriores
-        ↓
-Classes de níveis superiores
+O limite inicial de 12 vale para a distribuição durante a criação do personagem. A evolução posterior deve obedecer às regras de progressão configuradas.
 
-Os requisitos exatos para desbloqueio das classes e trabalhos ainda serão definidos.
+A progressão futura deverá estabelecer como o limite aumenta com os níveis e quais restrições se aplicam à evolução por maestria.
 
-7. Liberdade de desenvolvimento
+### 4.2. Atributos e características derivadas
 
-O sistema deve permitir diferentes formas de desenvolvimento.
+Futuramente, os atributos poderão contribuir para características calculadas, como:
 
-O jogador não deve ser obrigado a seguir uma única trajetória de personagem.
+- Vida máxima.
+- Dano.
+- Defesa.
+- Velocidade de combate.
+- Precisão.
+- Resistências.
+- Recursos necessários para utilizar habilidades.
 
-A progressão deve permitir que diferentes jogadores construam personagens diferentes mesmo partindo das mesmas condições iniciais.
+As fórmulas definitivas ainda devem ser decididas e testadas. Não se deve presumir que todos esses valores já fazem parte do sistema atual.
 
-A classe deve funcionar como uma especialização conquistada, e não como uma restrição absoluta.
+## 5. Sistema de maestria dos atributos
 
-8. O que ainda não está definido
+### 5.1. Conceito
 
-Os seguintes elementos ainda precisam ser especificados:
+Cada atributo possui uma progressão de maestria própria.
 
-Efeito de cada atributo.
-Regras de aumento dos atributos após a criação.
-Sistema de XP.
-Quantidade de XP necessária para subir de nível.
-Regras de evolução dos atributos.
-Requisitos para desbloquear cada classe.
-Classes disponíveis inicialmente.
-Trabalhos de cada classe.
-Classes de níveis superiores.
-Sistema de evolução das habilidades.
-Relação entre atributos e habilidades.
-Vida e demais recursos derivados dos atributos.
-Regras de progressão após o nível inicial.
+A proposta é que o personagem desenvolva suas capacidades ao utilizar, praticar ou exercitar atividades relacionadas a elas. Dessa forma, o desenvolvimento não depende exclusivamente de derrotar inimigos ou receber experiência geral.
 
-Esses elementos não devem ser inventados ou implementados como regras definitivas antes de serem definidos no projeto.
-9. Maestria dos Atributos
+Por exemplo, um personagem pode desenvolver sua força por meio de atividades físicas e combates, enquanto outro pode desenvolver mais sua inteligência por meio de atividades intelectuais.
 
-Cada atributo possui uma progressão própria de maestria.
+### 5.2. Maestria e experiência geral
 
-A maestria representa a experiência prática acumulada pelo personagem relacionada àquele atributo.
+A experiência geral e a experiência de maestria são sistemas diferentes.
 
-Quanto mais o personagem utiliza, desenvolve ou se envolve em atividades relacionadas a determinado atributo, mais experiência de maestria esse atributo recebe.
+- **Experiência geral:** contribui para a progressão do nível do personagem.
+- **Experiência de maestria:** contribui para o desenvolvimento individual de cada atributo.
 
-A maestria pode ser adquirida de forma direta ou indireta.
+Receber experiência geral não deve significar, automaticamente, que todos os atributos aumentem da mesma forma.
 
-Exemplos
+O sistema de personagem já possui integração com o armazenamento para adicionar experiência geral e experiência de maestria. Os critérios completos de concessão e os valores de progressão precisam seguir as configurações efetivamente implementadas.
 
-Combates físicos podem contribuir para:
+### 5.3. Relação entre atividades e atributos
 
-Força.
-Destreza.
-Agilidade.
-Constituição.
+A intenção é permitir que diferentes ações contribuam para diferentes maestrias.
 
-O uso de uma habilidade pode contribuir para um ou mais atributos relacionados ao seu funcionamento.
+Exemplos conceituais:
 
-Estudo, aprendizado e atividades intelectuais podem contribuir para Inteligência.
+| Atividade | Maestrias que podem ser relacionadas |
+|---|---|
+| Exercícios de força e esforço físico | Força e Constituição |
+| Movimentos técnicos e ataques precisos | Destreza |
+| Treinamento de movimentação | Agilidade |
+| Estudos e resolução de problemas | Inteligência |
+| Práticas relacionadas à natureza ou à cura | Sabedoria |
+| Negociação e interação social | Carisma |
+| Situações específicas de sorte | Sorte |
 
-Atividades relacionadas à natureza, cura ou outras formas de energia podem contribuir para Sabedoria.
+Essas relações são exemplos para orientar o design. A concessão efetiva de maestria deve ser definida por atividade, habilidade ou regra do sistema.
 
-Atividades sociais, influência e manipulação podem contribuir para Carisma.
+Uma mesma atividade poderá contribuir para mais de um atributo quando isso fizer sentido. No entanto, essa relação deverá ser explícita, evitando ganhos automáticos e indiscriminados.
 
-Situações que envolvam acontecimentos favoráveis podem contribuir para Sorte, conforme as regras específicas do sistema.
+### 5.4. Evolução por maestria
 
-Progressão
+A proposta é que a maestria acumule experiência até atingir determinados requisitos para aumentar o atributo correspondente.
 
-Cada atributo possui seu próprio XP de maestria.
+Ainda precisam ser definidos:
 
-Exemplo:
+- Quantidade de experiência necessária por evolução.
+- Se o custo aumenta a cada nível do atributo.
+- Quantidade de maestria concedida por atividade.
+- Limites de ganho por ação ou atividade repetida.
+- Possíveis modificadores relacionados a habilidades e treinamento.
+- Relação entre o nível do personagem e o limite de atributo.
+- Como tratar a maestria quando o atributo atinge seu limite atual.
 
-Força
-Maestria: 730 / 1000
+Esses valores devem ficar em configurações apropriadas, quando forem definidos, em vez de serem espalhados por diversos módulos.
 
-Ao atingir o valor necessário:
+## 6. Experiência e nível do personagem
 
-730 / 1000
-      ↓
-prática
-      ↓
-1000 / 1000
-      ↓
-Força aumenta
+O personagem começa no nível 1 com 0 XP.
 
-A progressão de maestria é independente entre os atributos.
+A experiência geral representa a progressão do personagem ao longo da aventura. O combate já possui integração com a concessão de experiência após uma vitória válida.
 
-Um personagem pode possuir alta maestria em um atributo e baixa maestria em outro.
+O sistema de armazenamento também possui uma operação para adicionar experiência ao personagem e retornar informações como experiência total, nível e níveis ganhos.
 
-Relação com habilidades
+A estrutura atual deve ser mantida separada das decisões futuras sobre balanceamento.
 
-Habilidades podem contribuir para a maestria de determinados atributos.
+Ainda precisam ser estabelecidos ou revisados:
 
-Algumas habilidades também poderão possuir efeitos que aumentem ou modifiquem o ganho de maestria de atributos específicos.
+- A quantidade de XP necessária para cada nível.
+- A curva de progressão entre níveis.
+- Os atributos ou benefícios concedidos ao subir de nível.
+- A relação entre nível e limite máximo dos atributos.
+- A concessão de experiência por exploração, missões e outras atividades.
+- A prevenção de ganhos indevidos ou repetidos.
 
-Exemplo conceitual:
+Não se deve assumir que subir de nível aumenta automaticamente todos os atributos. Essa regra precisa ser definida explicitamente.
 
-Habilidade:
-Golpe Poderoso
+## 7. Sistema de classes
 
-Uso:
-→ Maestria de Força
-→ Maestria de Destreza
+### 7.1. Ausência de classe inicial
 
-Bônus:
-→ aumento no ganho de Maestria de Força
+O personagem começa sem classe.
 
-Os valores numéricos, fórmulas e regras detalhadas de ganho de maestria ainda serão definidos.
+A intenção é que as classes sejam desbloqueadas durante a aventura, conforme o jogador desenvolve o personagem e cumpre requisitos específicos.
 
-Relação com o nível
+Os requisitos poderão envolver, futuramente:
 
-A maestria dos atributos não substitui o nível do personagem.
+- Valores mínimos de atributos.
+- Habilidades aprendidas.
+- Missões concluídas.
+- Treinamento.
+- Experiência em determinada atividade.
+- Interações com NPCs ou outros elementos do mundo.
 
-Os dois sistemas possuem funções diferentes:
+Esses requisitos ainda precisam ser definidos. A documentação não estabelece classes ou condições definitivas que ainda não foram aprovadas.
 
-XP do personagem
-→ determina o nível geral
+### 7.2. Classes como caminhos de desenvolvimento
 
-XP de maestria
-→ determina o desenvolvimento dos atributos
+As classes devem representar caminhos de especialização, e não necessariamente restrições absolutas sobre tudo o que o personagem pode aprender.
 
-O nível do personagem aumenta o limite que os atributos podem alcançar, enquanto a maestria representa o desenvolvimento efetivo desses atributos através das experiências do personagem.
+A intenção é permitir combinações e desenvolvimentos menos rígidos.
+
+Exemplos conceituais:
+
+- Um personagem com perfil de guerreiro poderá aprender determinadas técnicas mágicas.
+- Um personagem com perfil de mago poderá desenvolver técnicas físicas.
+- Um personagem poderá combinar capacidades de áreas diferentes, respeitando os requisitos e limites de cada habilidade.
+
+Isso não significa que todas as habilidades serão acessíveis a todos. Requisitos, custos, treinamento e restrições ainda poderão existir.
+
+### 7.3. Progressão das classes
+
+A progressão planejada poderá seguir uma estrutura semelhante a esta:
+
+1. Personagem sem classe.
+2. Desenvolvimento de atributos e habilidades.
+3. Cumprimento dos requisitos de uma classe.
+4. Desbloqueio e desenvolvimento da classe.
+5. Acesso a especializações ou evoluções posteriores.
+6. Possibilidade de alcançar classes de níveis superiores.
+
+Essa estrutura é conceitual. Os nomes, níveis, requisitos, ramificações e condições de evolução ainda não estão definidos por completo.
+
+A arquitetura deverá permitir adicionar classes por meio de arquivos de dados próprios, mantendo a lógica de desbloqueio e validação em módulos especializados.
+
+### 7.4. Classes planejadas
+
+As classes iniciais e avançadas ainda serão definidas.
+
+A classe Assassino está fora do escopo da V1 conforme a decisão atual do projeto. Isso não impede uma eventual inclusão em versões futuras, caso seja aprovada.
+
+## 8. Habilidades e especializações futuras
+
+O projeto pretende permitir o desenvolvimento de habilidades relacionadas a diferentes estilos de jogo.
+
+Futuramente, habilidades poderão possuir:
+
+- Identificador único.
+- Nome e descrição.
+- Requisitos.
+- Custos para utilização.
+- Efeitos.
+- Relação com atributos.
+- Relação com classes ou treinamentos.
+- Condições de desbloqueio.
+- Possibilidade de evolução.
+
+Uma habilidade poderá contribuir para o desenvolvimento de maestrias relacionadas ao seu uso, caso essa regra seja aprovada.
+
+Os detalhes do sistema de habilidades não estão definidos por completo nesta documentação. Sua implementação deverá ser planejada como um sistema próprio, integrado ao personagem sem concentrar toda a lógica em um único arquivo.
+
+## 9. Persistência e armazenamento
+
+Os dados do personagem precisam permanecer disponíveis entre as telas e sessões do jogo, conforme o mecanismo de armazenamento adotado.
+
+Na implementação atual, o módulo `aplicativos/jogo/personagem/armazenamento.js` é responsável pelas operações de armazenamento e atualização do personagem.
+
+Entre as operações existentes estão:
+
+- Salvar o personagem.
+- Carregar o personagem.
+- Remover o personagem.
+- Adicionar experiência geral.
+- Adicionar experiência de maestria.
+
+O armazenamento atual utiliza `localStorage` do navegador, com a chave `rpg_web_personagem`.
+
+Isso atende à estrutura local atual do projeto. Uma futura versão com contas, múltiplos personagens por usuário, servidores ou persistência centralizada poderá exigir outra arquitetura, mas essa mudança não deve ser antecipada sem necessidade.
+
+A validação das informações deve continuar sendo responsabilidade da lógica do jogo, não apenas da interface.
+
+## 10. Organização dos módulos do personagem
+
+A estrutura atual separa responsabilidades:
+
+### `aplicativos/jogo/personagem/personagem.js`
+
+Responsável pela criação e pelas regras básicas de validação do personagem, incluindo os atributos disponíveis e a distribuição inicial de pontos.
+
+### `aplicativos/jogo/personagem/armazenamento.js`
+
+Responsável por persistir e recuperar os dados do personagem e por operações relacionadas à experiência geral e à maestria.
+
+### `aplicativos/jogo/personagem/progressao.js`
+
+Responsável pelas regras de progressão do personagem. Seu escopo específico deve ser conferido junto ao código atual antes de documentar detalhes adicionais.
+
+### `aplicativos/jogo/atributos/maestria.js`
+
+Responsável pelas operações relacionadas à estrutura de maestrias dos atributos.
+
+### `configuracoes/progressao/personagem.js`
+
+Centraliza configurações e regras numéricas relacionadas à progressão do personagem, incluindo o cálculo do limite de atributos.
+
+### `configuracoes/progressao/maestria.js`
+
+Centraliza configurações relacionadas à evolução por maestria.
+
+Os módulos de configuração devem conter parâmetros e regras de progressão que façam sentido serem configuráveis. Os dados de conteúdo e a lógica operacional devem permanecer organizados de acordo com suas responsabilidades.
+
+## 11. Testes e confiabilidade
+
+As regras do personagem devem possuir testes automatizados para reduzir o risco de regressões quando novos sistemas forem adicionados.
+
+Entre os comportamentos que devem ser verificados estão:
+
+- Criação válida do personagem.
+- Rejeição de distribuições de atributos inválidas.
+- Respeito aos pontos disponíveis.
+- Respeito aos limites de atributos.
+- Salvamento e carregamento.
+- Adição de experiência.
+- Progressão de nível.
+- Ganhos de experiência de maestria.
+- Preservação dos dados durante atualizações.
+- Tratamento de situações inválidas.
+
+Os testes existentes devem ser atualizados quando as regras mudarem. Novos comportamentos não devem ser considerados concluídos apenas porque funcionam visualmente na interface.
+
+## 12. Princípios de arquitetura
+
+O sistema de personagem deve respeitar a regra fundamental do RPG Web:
+
+> O código define como funciona; os dados definem o que existe no jogo.
+
+Na prática:
+
+- Cada módulo deve possuir uma responsabilidade clara.
+- Conteúdo não deve ser concentrado em arquivos centrais gigantes.
+- Novas classes, habilidades e outros conteúdos devem preferencialmente ser adicionados por arquivos de dados próprios.
+- A lógica de validação deve ficar separada da apresentação visual.
+- Sistemas independentes não devem ser misturados sem necessidade.
+- Novas funcionalidades devem ser adicionadas sem alterar sistemas existentes sempre que isso for possível e seguro.
+- Alterações em regras compartilhadas devem ser acompanhadas de testes.
+- A arquitetura deve permitir expansão gradual, sem criar complexidade desnecessária antes de ela ser necessária.
+
+A separação modular não significa que nenhum arquivo existente poderá ser alterado. Significa que cada alteração deve acontecer no módulo responsável pela regra afetada, evitando efeitos colaterais em sistemas não relacionados.
+
+## 13. Estado das decisões
+
+### Implementado ou presente na estrutura atual
+
+- Criação do personagem com oito atributos.
+- Distribuição inicial de 40 pontos.
+- Limite de 12 pontos por atributo durante a criação inicial.
+- Personagem inicial no nível 1, com 0 XP e sem classe.
+- Estrutura de armazenamento do personagem.
+- Operações para adicionar experiência geral e experiência de maestria.
+- Configurações de progressão e limites de atributos.
+- Módulos de lógica separados para partes do sistema.
+
+A presença de um módulo não garante, por si só, que todas as regras futuras descritas neste documento estejam implementadas.
+
+### Definido como direção do projeto
+
+- Classes não obrigatórias na criação.
+- Desenvolvimento gradual do personagem.
+- Maestria individual para cada atributo.
+- Separação entre experiência geral e experiência de maestria.
+- Liberdade para combinar caminhos de desenvolvimento.
+- Arquitetura modular e orientada a dados.
+- Possibilidade de expandir o sistema sem concentrar todas as regras em um único arquivo.
+
+### Em aberto para decisões futuras
+
+- Fórmulas completas dos atributos.
+- Curva de XP e progressão dos níveis.
+- Regras definitivas de ganho de maestria.
+- Evolução dos limites dos atributos.
+- Benefícios concedidos ao subir de nível.
+- Lista de classes e requisitos de desbloqueio.
+- Sistema de habilidades e suas evoluções.
+- Fórmulas de vida, dano, defesa e outros valores derivados.
+- Relações definitivas entre atividades, habilidades e maestrias.
+
+## 14. Critério para considerar o sistema concluído
+
+O sistema de personagem deverá ser considerado concluído para uma versão específica quando suas regras aprovadas estiverem implementadas, validadas por testes e documentadas de forma compatível com o código.
+
+Uma ideia descrita nesta documentação não deve ser tratada automaticamente como funcionalidade pronta.
+
+Quando uma decisão de design for aprovada, a documentação deverá ser atualizada. Quando a implementação for concluída, o estado deverá ser atualizado novamente para refletir o comportamento real do jogo.
