@@ -176,3 +176,242 @@ function desenharObjeto(contexto, objeto, tamanhoCelula, deslocamentoX, deslocam
             break;
     }
 }
+
+/**
+ * Renderiza as criaturas presentes no cenário.
+ * A aparência é escolhida pelo monstroId, sem alterar os dados da criatura.
+ *
+ * @param {CanvasRenderingContext2D} contexto
+ * @param {Array<object>} criaturas
+ * @param {object} area
+ */
+export function renderizarCriaturas(contexto, criaturas, area) {
+    if (!contexto || typeof contexto.beginPath !== "function") {
+        throw new TypeError("É necessário fornecer um contexto 2D válido.");
+    }
+
+    if (!Array.isArray(criaturas)) {
+        throw new TypeError("As criaturas devem ser fornecidas em uma lista.");
+    }
+
+    if (
+        !area ||
+        !Number.isFinite(area.tamanhoCelula) ||
+        area.tamanhoCelula <= 0 ||
+        !Number.isFinite(area.deslocamentoX) ||
+        !Number.isFinite(area.deslocamentoY)
+    ) {
+        throw new TypeError("A área de renderização é inválida.");
+    }
+
+    for (const criatura of criaturas) {
+        if (
+            !criatura ||
+            !Number.isInteger(criatura.x) ||
+            !Number.isInteger(criatura.y) ||
+            typeof criatura.monstroId !== "string"
+        ) {
+            continue;
+        }
+
+        desenharCriatura(contexto, criatura, area);
+    }
+}
+
+function desenharCriatura(contexto, criatura, area) {
+    const escala = area.tamanhoCelula;
+
+    const centroX =
+        area.deslocamentoX + (criatura.x + 0.5) * escala;
+
+    const centroY =
+        area.deslocamentoY + (criatura.y + 0.5) * escala;
+
+    contexto.save();
+
+    if (criatura.monstroId === "lobo-da-floresta") {
+        desenharLobo(contexto, centroX, centroY, escala);
+    } else {
+        desenharCriaturaGenerica(contexto, centroX, centroY, escala);
+    }
+
+    contexto.restore();
+}
+
+function desenharLobo(contexto, centroX, centroY, escala) {
+    // Sombra
+    contexto.beginPath();
+    contexto.ellipse(
+        centroX,
+        centroY + escala * 0.28,
+        escala * 0.29,
+        escala * 0.09,
+        0,
+        0,
+        Math.PI * 2
+    );
+    contexto.fillStyle = "rgba(0, 0, 0, 0.35)";
+    contexto.fill();
+
+    // Pernas
+    contexto.beginPath();
+    contexto.lineWidth = escala * 0.07;
+    contexto.lineCap = "round";
+    contexto.strokeStyle = "#3d302b";
+
+    for (const lado of [-1, 1]) {
+        contexto.moveTo(
+            centroX + lado * escala * 0.15,
+            centroY + escala * 0.05
+        );
+        contexto.lineTo(
+            centroX + lado * escala * 0.18,
+            centroY + escala * 0.25
+        );
+    }
+
+    contexto.stroke();
+
+    // Corpo
+    contexto.beginPath();
+    contexto.ellipse(
+        centroX,
+        centroY + escala * 0.02,
+        escala * 0.27,
+        escala * 0.17,
+        0,
+        0,
+        Math.PI * 2
+    );
+    contexto.fillStyle = "#82766b";
+    contexto.fill();
+    contexto.strokeStyle = "#3d302b";
+    contexto.lineWidth = escala * 0.035;
+    contexto.stroke();
+
+    // Cauda
+    contexto.beginPath();
+    contexto.moveTo(
+        centroX - escala * 0.22,
+        centroY - escala * 0.02
+    );
+    contexto.quadraticCurveTo(
+        centroX - escala * 0.36,
+        centroY - escala * 0.10,
+        centroX - escala * 0.34,
+        centroY + escala * 0.09
+    );
+    contexto.strokeStyle = "#62564d";
+    contexto.lineWidth = escala * 0.075;
+    contexto.stroke();
+
+    // Cabeça
+    contexto.beginPath();
+    contexto.arc(
+        centroX + escala * 0.18,
+        centroY - escala * 0.12,
+        escala * 0.15,
+        0,
+        Math.PI * 2
+    );
+    contexto.fillStyle = "#a09283";
+    contexto.fill();
+    contexto.strokeStyle = "#3d302b";
+    contexto.lineWidth = escala * 0.035;
+    contexto.stroke();
+
+    // Orelhas
+    for (const lado of [-1, 1]) {
+        contexto.beginPath();
+        contexto.moveTo(
+            centroX + escala * (0.12 + lado * 0.08),
+            centroY - escala * 0.20
+        );
+        contexto.lineTo(
+            centroX + escala * (0.10 + lado * 0.09),
+            centroY - escala * 0.34
+        );
+        contexto.lineTo(
+            centroX + escala * (0.22 + lado * 0.04),
+            centroY - escala * 0.22
+        );
+        contexto.closePath();
+        contexto.fillStyle = "#82766b";
+        contexto.fill();
+        contexto.stroke();
+    }
+
+    // Focinho
+    contexto.beginPath();
+    contexto.ellipse(
+        centroX + escala * 0.29,
+        centroY - escala * 0.08,
+        escala * 0.09,
+        escala * 0.06,
+        0,
+        0,
+        Math.PI * 2
+    );
+    contexto.fillStyle = "#d1c2ad";
+    contexto.fill();
+    contexto.stroke();
+
+    // Nariz
+    contexto.beginPath();
+    contexto.arc(
+        centroX + escala * 0.36,
+        centroY - escala * 0.08,
+        escala * 0.025,
+        0,
+        Math.PI * 2
+    );
+    contexto.fillStyle = "#171514";
+    contexto.fill();
+
+    // Olho
+    contexto.beginPath();
+    contexto.arc(
+        centroX + escala * 0.22,
+        centroY - escala * 0.15,
+        escala * 0.025,
+        0,
+        Math.PI * 2
+    );
+    contexto.fillStyle = "#171514";
+    contexto.fill();
+}
+
+function desenharCriaturaGenerica(
+    contexto,
+    centroX,
+    centroY,
+    escala
+) {
+    // Aparência provisória para tipos ainda sem desenho próprio.
+    contexto.beginPath();
+    contexto.ellipse(
+        centroX,
+        centroY + escala * 0.28,
+        escala * 0.25,
+        escala * 0.08,
+        0,
+        0,
+        Math.PI * 2
+    );
+    contexto.fillStyle = "rgba(0, 0, 0, 0.3)";
+    contexto.fill();
+
+    contexto.beginPath();
+    contexto.arc(
+        centroX,
+        centroY,
+        escala * 0.22,
+        0,
+        Math.PI * 2
+    );
+    contexto.fillStyle = "#a5b3a0";
+    contexto.fill();
+    contexto.strokeStyle = "#293b2b";
+    contexto.lineWidth = escala * 0.04;
+    contexto.stroke();
+}

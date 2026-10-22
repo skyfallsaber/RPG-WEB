@@ -25,21 +25,28 @@ const elemento = id => document.getElementById(id);
 const botaoAcao = elemento("botao-acao");
 const botaoVoltar = elemento("botao-voltar");
 
+const parametrosURL = new URLSearchParams(window.location.search);
+const monstroId = parametrosURL.get("monstroId");
+
 let combate = null;
 let processando = false;
 
 
 botaoVoltar.addEventListener("click", () => {
-    window.location.href = "/telas/inicio.html";
+    window.location.href = "/telas/mapa.html";
 });
+
 
 botaoAcao.addEventListener("click", async () => {
     if (processando) {
         return;
     }
 
-    if (combate?.status === "vitoria" || combate?.status === "derrota") {
-        window.location.href = "/telas/inicio.html";
+    if (
+        combate?.status === "vitoria" ||
+        combate?.status === "derrota"
+    ) {
+        window.location.href = "/telas/mapa.html";
         return;
     }
 
@@ -54,6 +61,11 @@ botaoAcao.addEventListener("click", async () => {
 });
 
 
+function voltarParaExploracao() {
+    window.location.href = "/telas/mapa.html";
+}
+
+
 function prepararCombate() {
     const personagem = carregarPersonagem();
 
@@ -65,25 +77,36 @@ function prepararCombate() {
             "Crie um personagem primeiro";
 
         elemento("descricao-acao").textContent =
-            "Volte à página inicial para criar seu personagem.";
+            "Volte à página de criação para criar seu personagem.";
 
-        botaoAcao.textContent = "Voltar à aventura";
+        botaoAcao.textContent = "Criar personagem";
         botaoAcao.disabled = false;
 
         botaoAcao.onclick = () => {
-            window.location.href = "/telas/criacao-personagem.html";
+            window.location.href =
+                "/telas/criacao-personagem.html";
         };
 
         return;
     }
 
-    const monstro = obterMonstro("lobo-da-floresta");
+    if (!monstroId) {
+        mostrarErroDeSelecao(
+            "Nenhum monstro foi selecionado.",
+            "Volte à exploração e escolha uma criatura para iniciar o combate."
+        );
+
+        return;
+    }
+
+    const monstro = obterMonstro(monstroId);
 
     if (!monstro) {
-        elemento("mensagem-status").textContent =
-            "Não foi possível encontrar o monstro.";
+        mostrarErroDeSelecao(
+            `O monstro "${monstroId}" não existe no catálogo.`,
+            "Volte à exploração e selecione uma criatura válida."
+        );
 
-        botaoAcao.disabled = true;
         return;
     }
 
@@ -115,6 +138,21 @@ function prepararCombate() {
     } else {
         botaoAcao.disabled = false;
     }
+}
+
+
+function mostrarErroDeSelecao(mensagem, descricao) {
+    elemento("mensagem-status").textContent = mensagem;
+
+    elemento("titulo-acao").textContent =
+        "Não foi possível iniciar o combate";
+
+    elemento("descricao-acao").textContent = descricao;
+
+    botaoAcao.textContent = "Voltar à exploração";
+    botaoAcao.disabled = false;
+
+    botaoAcao.onclick = voltarParaExploracao;
 }
 
 
@@ -153,12 +191,15 @@ async function executarTurno() {
                     `Você venceu, mas a recompensa falhou: ${recompensa.mensagem || "erro ao salvar XP"}`;
             }
 
-            elemento("titulo-acao").textContent = "Combate encerrado";
+            elemento("titulo-acao").textContent =
+                "Combate encerrado";
+
             elemento("descricao-acao").textContent =
-                "Volte à aventura para continuar sua jornada.";
+                "Volte à exploração para continuar sua jornada.";
 
             atualizarInterface();
-            botaoAcao.textContent = "Voltar à aventura";
+
+            botaoAcao.textContent = "Voltar à exploração";
             return;
         }
 
@@ -166,12 +207,15 @@ async function executarTurno() {
             elemento("mensagem-status").textContent =
                 "Você foi derrotado. Seu personagem retornou à Praça.";
 
-            elemento("titulo-acao").textContent = "Combate encerrado";
+            elemento("titulo-acao").textContent =
+                "Combate encerrado";
+
             elemento("descricao-acao").textContent =
                 "Nenhuma recompensa foi concedida.";
 
             atualizarInterface();
-            botaoAcao.textContent = "Voltar à aventura";
+
+            botaoAcao.textContent = "Voltar à exploração";
             return;
         }
 
@@ -185,7 +229,8 @@ async function executarTurno() {
 
             if (!turnoMonstro.sucesso) {
                 elemento("mensagem-status").textContent =
-                    turnoMonstro.mensagem || "Não foi possível executar o turno do monstro.";
+                    turnoMonstro.mensagem ||
+                    "Não foi possível executar o turno do monstro.";
 
                 atualizarInterface();
                 return;
@@ -197,16 +242,20 @@ async function executarTurno() {
                 elemento("mensagem-status").textContent =
                     "Você foi derrotado. Seu personagem retornou à Praça.";
 
-                elemento("titulo-acao").textContent = "Combate encerrado";
+                elemento("titulo-acao").textContent =
+                    "Combate encerrado";
+
                 elemento("descricao-acao").textContent =
                     "Nenhuma recompensa foi concedida.";
 
-                botaoAcao.textContent = "Voltar à aventura";
+                botaoAcao.textContent = "Voltar à exploração";
                 return;
             }
         }
 
-        elemento("mensagem-status").textContent = "Sua vez de agir.";
+        elemento("mensagem-status").textContent =
+            "Sua vez de agir.";
+
     } catch (erro) {
         console.error("Erro durante o combate:", erro);
 
@@ -215,7 +264,15 @@ async function executarTurno() {
 
     } finally {
         processando = false;
-        botaoAcao.disabled = false;
+
+        if (
+            combate &&
+            combate.status === "em_andamento"
+        ) {
+            botaoAcao.disabled = false;
+        } else if (combate) {
+            botaoAcao.disabled = false;
+        }
     }
 }
 

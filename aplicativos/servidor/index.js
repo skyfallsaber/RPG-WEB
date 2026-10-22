@@ -43,7 +43,14 @@ const tiposMime = {
 
 const servidor = http.createServer((requisicao, resposta) => {
 
-    let caminhoRequisitado = requisicao.url;
+    const urlRequisicao = new URL(
+        requisicao.url,
+        `http://${requisicao.headers.host || "localhost"}`
+    );
+
+    let caminhoRequisitado = decodeURIComponent(
+        urlRequisicao.pathname
+    );
 
     if (caminhoRequisitado === "/") {
         caminhoRequisitado = "/index.html";

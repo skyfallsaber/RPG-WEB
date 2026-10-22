@@ -28,5 +28,14 @@ export const cenarioPraca = {
         { tipo: "arvore", x: 13, y: 9 },
         { tipo: "pedra", x: 2, y: 8 },
         { tipo: "casa", x: 10, y: 3, largura: 3, altura: 3 }
+    ],
+    criaturas: [
+        {
+            id: "lobo-01",
+            monstroId: "lobo-da-floresta",
+            x: 8,
+            y: 4
+        }
     ]
+
 };
