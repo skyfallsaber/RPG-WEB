@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -6,6 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa do Mundo | RPG Web</title>
     <link rel="stylesheet" href="/estilos/mapa.css">
+
+    <style>
+        .painel-exploracao {
+            overflow: hidden;
+        }
+
+        .area-canvas {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #3b414b;
+            border-radius: 8px;
+            background: #20252d;
+        }
+
+        #canvas-exploracao {
+            display: block;
+            width: 100%;
+            max-width: 768px;
+            height: auto;
+            margin: 0 auto;
+            image-rendering: pixelated;
+        }
+
+        .mensagem-exploracao {
+            margin-top: 12px;
+            color: #c2c7d0;
+        }
+    </style>
 </head>
 <body>
     <main class="mapa-page">
@@ -36,9 +63,8 @@
             <div class="local-atual-info">
                 <p class="etiqueta">VOCÊ ESTÁ EM</p>
                 <h2 id="nome-local-atual">Carregando...</h2>
-                <p id="descricao-local-atual">
-                    Consultando o mundo...
-                </p>
+                <p id="descricao-local-atual">Consultando o mundo...</p>
+
                 <div class="caminho-atual">
                     <span id="regiao-atual"></span>
                     <span class="separador">/</span>
@@ -47,12 +73,41 @@
             </div>
         </section>
 
+        <section class="painel painel-exploracao">
+            <div class="titulo-painel">
+                <div>
+                    <p class="etiqueta">EXPLORAÇÃO</p>
+                    <h2 id="titulo-cenario">Cenário do local</h2>
+                </div>
+            </div>
+
+            <div class="area-canvas">
+                <canvas
+                    id="canvas-exploracao"
+                    width="768"
+                    height="576"
+                    aria-label="Cenário 2D do local atual"
+                >
+                    Seu navegador não suporta Canvas.
+                </canvas>
+            </div>
+
+            <p
+                id="mensagem-exploracao"
+                class="mensagem-exploracao"
+                role="status"
+            >
+                Carregando cenário...
+            </p>
+        </section>
+
         <section class="painel">
             <div class="titulo-painel">
                 <div>
                     <p class="etiqueta">CAMINHOS DISPONÍVEIS</p>
                     <h2>Para onde deseja ir?</h2>
                 </div>
+
                 <span class="contador" id="contador-destinos">0 destinos</span>
             </div>
 
@@ -84,16 +139,30 @@
             moverPersonagem
         } from "/jogo/mundo/navegacao.js";
 
+        import {
+            iniciarExploracao
+        } from "/scripts/exploracao/controladorExploracao.js";
+
         const listaDestinos = document.getElementById("lista-destinos");
         const mensagemMapa = document.getElementById("mensagem-mapa");
+        const canvasExploracao = document.getElementById("canvas-exploracao");
+        const mensagemExploracao =
+            document.getElementById("mensagem-exploracao");
+        const tituloCenario = document.getElementById("titulo-cenario");
 
-        document.getElementById("voltar-aventura").addEventListener("click", () => {
-            window.location.href = "/telas/inicio.html";
-        });
+        let ultimoLocalRenderizado = null;
 
-        document.getElementById("abrir-ficha").addEventListener("click", () => {
-            window.location.href = "/telas/personagem.html";
-        });
+        document
+            .getElementById("voltar-aventura")
+            .addEventListener("click", () => {
+                window.location.href = "/telas/inicio.html";
+            });
+
+        document
+            .getElementById("abrir-ficha")
+            .addEventListener("click", () => {
+                window.location.href = "/telas/personagem.html";
+            });
 
         function carregarEstadoAtual() {
             const personagem = carregarPersonagem();
@@ -109,9 +178,12 @@
                     </section>
                 `;
 
-                document.getElementById("ir-criacao").addEventListener("click", () => {
-                    window.location.href = "/telas/criacao-personagem.html";
-                });
+                document
+                    .getElementById("ir-criacao")
+                    .addEventListener("click", () => {
+                        window.location.href =
+                            "/telas/criacao-personagem.html";
+                    });
 
                 return null;
             }
@@ -121,8 +193,12 @@
 
         function mostrarLocalAtual(personagem) {
             const local = obterLocalAtual(personagem);
-            const regiao = obterRegiao(personagem.localizacao?.regiaoId);
-            const cidade = obterCidade(personagem.localizacao?.cidadeId);
+            const regiao = obterRegiao(
+                personagem.localizacao?.regiaoId
+            );
+            const cidade = obterCidade(
+                personagem.localizacao?.cidadeId
+            );
 
             if (!local) {
                 document.getElementById("nome-local-atual").textContent =
@@ -137,7 +213,7 @@
                 document.getElementById("cidade-atual").textContent =
                     "Cidade desconhecida";
 
-                return false;
+                return null;
             }
 
             document.getElementById("nome-local-atual").textContent =
@@ -152,7 +228,47 @@
             document.getElementById("cidade-atual").textContent =
                 cidade?.nome || "Área externa";
 
-            return true;
+            return local;
+        }
+
+        function mostrarCenario(local) {
+            if (!local) {
+                canvasExploracao.hidden = true;
+                mensagemExploracao.textContent =
+                    "Não foi possível identificar o cenário deste local.";
+                return;
+            }
+
+            if (ultimoLocalRenderizado === local.id) {
+                return;
+            }
+
+            ultimoLocalRenderizado = local.id;
+
+            if (local.id !== "praca") {
+                canvasExploracao.hidden = true;
+                tituloCenario.textContent = local.nome;
+                mensagemExploracao.textContent =
+                    "O cenário visual deste local ainda não foi criado.";
+                return;
+            }
+
+            try {
+                canvasExploracao.hidden = false;
+                tituloCenario.textContent = local.nome;
+
+                iniciarExploracao(canvasExploracao, local.id);
+
+                mensagemExploracao.textContent =
+    "Use W, A, S, D ou as setas do teclado para movimentar seu personagem. Clique no cenário para ativar os controles.";
+            } catch (erro) {
+                canvasExploracao.hidden = true;
+
+                mensagemExploracao.textContent =
+                    "Não foi possível carregar o cenário. Verifique os módulos da exploração.";
+
+                console.error("Erro ao carregar cenário:", erro);
+            }
         }
 
         function mostrarDestinos(personagem) {
@@ -199,7 +315,10 @@
                 const botao = document.createElement("button");
                 botao.className = "botao-viajar";
                 botao.textContent = "Viajar";
-                botao.setAttribute("aria-label", `Viajar para ${destino.nome}`);
+                botao.setAttribute(
+                    "aria-label",
+                    `Viajar para ${destino.nome}`
+                );
 
                 botao.addEventListener("click", () => {
                     viajarPara(destino.id);
@@ -256,10 +375,12 @@
                 return;
             }
 
-            const localValido = mostrarLocalAtual(personagem);
+            const local = mostrarLocalAtual(personagem);
 
-            if (!localValido) {
+            if (!local) {
                 listaDestinos.replaceChildren();
+
+                mostrarCenario(null);
 
                 mostrarMensagem(
                     "Verifique os IDs de localização do personagem e os dados do mundo.",
@@ -269,6 +390,7 @@
                 return;
             }
 
+            mostrarCenario(local);
             mostrarDestinos(personagem);
         }
 
@@ -276,4 +398,3 @@
     </script>
 </body>
 </html>
-```
