@@ -1,5 +1,6 @@
 import { renderizarCenario } from "./renderizadorCanvas.js";
 import { cenarioPraca } from "../../../../dados/mundo/cenarios/praca.js";
+import { posicaoBloqueada } from "./colisoes.js";
 
 const TAMANHO_CELULA = 48;
 const TECLAS_MOVIMENTO = new Set([
@@ -54,55 +55,142 @@ export function iniciarExploracao(canvas, localId = "praca") {
         });
         canvas.focus();
 
-        const centroX =
-            area.deslocamentoX +
-            (personagem.x + 0.5) * area.tamanhoCelula;
+        
+const centroX =
+    area.deslocamentoX + (personagem.x + 0.5) * area.tamanhoCelula;
 
-        const centroY =
-            area.deslocamentoY +
-            (personagem.y + 0.5) * area.tamanhoCelula;
+const centroY =
+    area.deslocamentoY + (personagem.y + 0.5) * area.tamanhoCelula;
 
-        // Sombra para destacar o personagem sobre o terreno.
-        contexto.beginPath();
-        contexto.ellipse(
-            centroX,
-            centroY + area.tamanhoCelula * 0.2,
-            area.tamanhoCelula * 0.22,
-            area.tamanhoCelula * 0.12,
-            0,
-            0,
-            Math.PI * 2
-        );
-        contexto.fillStyle = "rgba(0, 0, 0, 0.35)";
-        contexto.fill();
+const escala = area.tamanhoCelula;
 
-        // Corpo provisório do personagem.
-        contexto.beginPath();
-        contexto.arc(
-            centroX,
-            centroY,
-            area.tamanhoCelula * 0.27,
-            0,
-            Math.PI * 2
-        );
-        contexto.fillStyle = personagem.cor;
-        contexto.fill();
+// Sombra no chão
+contexto.beginPath();
+contexto.ellipse(
+    centroX,
+    centroY + escala * 0.36,
+    escala * 0.23,
+    escala * 0.10,
+    0,
+    0,
+    Math.PI * 2
+);
+contexto.fillStyle = "rgba(0, 0, 0, 0.35)";
+contexto.fill();
 
-        contexto.lineWidth = 2;
-        contexto.strokeStyle = "#493b1b";
-        contexto.stroke();
+// Configuração do contorno
+contexto.lineWidth = escala * 0.045;
+contexto.lineCap = "round";
+contexto.lineJoin = "round";
+contexto.strokeStyle = "#382b27";
 
-        // Indicador central para facilitar a visualização.
-        contexto.beginPath();
-        contexto.arc(
-            centroX,
-            centroY,
-            area.tamanhoCelula * 0.09,
-            0,
-            Math.PI * 2
-        );
-        contexto.fillStyle = "#493b1b";
-        contexto.fill();
+// Pernas
+contexto.beginPath();
+contexto.moveTo(centroX - escala * 0.07, centroY + escala * 0.12);
+contexto.lineTo(centroX - escala * 0.10, centroY + escala * 0.29);
+contexto.moveTo(centroX + escala * 0.07, centroY + escala * 0.12);
+contexto.lineTo(centroX + escala * 0.10, centroY + escala * 0.29);
+contexto.stroke();
+
+// Botas
+contexto.beginPath();
+contexto.moveTo(centroX - escala * 0.10, centroY + escala * 0.29);
+contexto.lineTo(centroX - escala * 0.17, centroY + escala * 0.31);
+contexto.moveTo(centroX + escala * 0.10, centroY + escala * 0.29);
+contexto.lineTo(centroX + escala * 0.17, centroY + escala * 0.31);
+contexto.stroke();
+
+// Braços
+contexto.beginPath();
+contexto.moveTo(centroX - escala * 0.10, centroY - escala * 0.07);
+contexto.lineTo(centroX - escala * 0.19, centroY + escala * 0.09);
+contexto.moveTo(centroX + escala * 0.10, centroY - escala * 0.07);
+contexto.lineTo(centroX + escala * 0.19, centroY + escala * 0.09);
+contexto.stroke();
+
+// Mãos
+contexto.fillStyle = "#e9b58c";
+for (const lado of [-1, 1]) {
+    contexto.beginPath();
+    contexto.arc(
+        centroX + lado * escala * 0.19,
+        centroY + escala * 0.10,
+        escala * 0.045,
+        0,
+        Math.PI * 2
+    );
+    contexto.fill();
+    contexto.stroke();
+}
+
+// Tronco: túnica de aventureiro
+contexto.beginPath();
+contexto.roundRect(
+    centroX - escala * 0.12,
+    centroY - escala * 0.13,
+    escala * 0.24,
+    escala * 0.29,
+    escala * 0.06
+);
+contexto.fillStyle = "#3d79a5";
+contexto.fill();
+contexto.stroke();
+
+// Cinto
+contexto.beginPath();
+contexto.moveTo(centroX - escala * 0.11, centroY + escala * 0.07);
+contexto.lineTo(centroX + escala * 0.11, centroY + escala * 0.07);
+contexto.strokeStyle = "#654326";
+contexto.lineWidth = escala * 0.055;
+contexto.stroke();
+
+// Cabeça
+contexto.beginPath();
+contexto.arc(
+    centroX,
+    centroY - escala * 0.22,
+    escala * 0.14,
+    0,
+    Math.PI * 2
+);
+contexto.fillStyle = "#e9b58c";
+contexto.fill();
+contexto.lineWidth = escala * 0.04;
+contexto.strokeStyle = "#382b27";
+contexto.stroke();
+
+// Cabelo
+contexto.beginPath();
+contexto.arc(
+    centroX,
+    centroY - escala * 0.255,
+    escala * 0.14,
+    Math.PI,
+    Math.PI * 2
+);
+contexto.lineTo(centroX + escala * 0.12, centroY - escala * 0.22);
+contexto.lineTo(centroX + escala * 0.04, centroY - escala * 0.25);
+contexto.lineTo(centroX - escala * 0.02, centroY - escala * 0.20);
+contexto.lineTo(centroX - escala * 0.09, centroY - escala * 0.23);
+contexto.closePath();
+contexto.fillStyle = "#493126";
+contexto.fill();
+contexto.stroke();
+
+// Olhos
+contexto.fillStyle = "#29221e";
+for (const lado of [-1, 1]) {
+    contexto.beginPath();
+    contexto.arc(
+        centroX + lado * escala * 0.05,
+        centroY - escala * 0.22,
+        escala * 0.018,
+        0,
+        Math.PI * 2
+    );
+    contexto.fill();
+}
+
 
         return area;
     }
@@ -148,13 +236,8 @@ export function iniciarExploracao(canvas, localId = "praca") {
         const novoX = personagem.x + dx;
         const novoY = personagem.y + dy;
 
-        // Nesta etapa, impedimos apenas que o personagem saia do mapa.
-        if (
-            novoX < 0 ||
-            novoX >= cenario.largura ||
-            novoY < 0 ||
-            novoY >= cenario.altura
-        ) {
+        // Impede atravessar limites, terrenos bloqueados e objetos.
+        if (posicaoBloqueada(cenario, novoX, novoY)) {
             return;
         }
 

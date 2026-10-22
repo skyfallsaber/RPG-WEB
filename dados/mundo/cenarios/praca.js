@@ -19,6 +19,7 @@ export const cenarioPraca = {
         ["grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"],
         ["grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"]
     ],
+    terrenosBloqueados: ["agua", "pedra"],
 
     objetos: [
         { tipo: "arvore", x: 1, y: 1 },
