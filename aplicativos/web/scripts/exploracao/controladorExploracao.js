@@ -1,10 +1,15 @@
+
 import {
     renderizarCenario,
     renderizarCriaturas
 } from "./renderizadorCanvas.js";
 
-import { cenarioPraca } from "../../../../dados/mundo/cenarios/praca.js";
+import {
+    obterCenario
+} from "../../../../dados/mundo/cenarios/indice.js";
+
 import { posicaoBloqueada } from "./colisoes.js";
+
 import {
     criarControladorCriaturas
 } from "./controladorCriaturas.js";
@@ -25,7 +30,11 @@ const DIRECOES_CRIATURAS = [
     { x: -1, y: 0 }
 ];
 
-export function iniciarExploracao(canvas, localId = "praca") {
+export function iniciarExploracao(
+    canvas,
+    localId = "praca",
+    opcoes = {}
+) {
     if (
         typeof HTMLCanvasElement === "undefined" ||
         !(canvas instanceof HTMLCanvasElement)
@@ -43,11 +52,7 @@ export function iniciarExploracao(canvas, localId = "praca") {
         );
     }
 
-    const cenarios = {
-        praca: cenarioPraca
-    };
-
-    const cenario = cenarios[localId];
+    const cenario = obterCenario(localId);
 
     if (!cenario) {
         throw new Error(
@@ -55,10 +60,15 @@ export function iniciarExploracao(canvas, localId = "praca") {
         );
     }
 
+    const aoEntrar = opcoes.aoEntrar ?? (() => {});
+    const aoMover = opcoes.aoMover ?? (() => {});
+
     canvas.width = cenario.largura * TAMANHO_CELULA;
     canvas.height = cenario.altura * TAMANHO_CELULA;
     canvas.tabIndex = 0;
+
     canvas.setAttribute("role", "application");
+
     canvas.setAttribute(
         "aria-label",
         "Mapa explorável. Use as teclas W, A, S, D ou as setas para mover o personagem."
@@ -66,15 +76,46 @@ export function iniciarExploracao(canvas, localId = "praca") {
 
     const controladorCriaturas = criarControladorCriaturas(cenario);
 
+    const posicaoInicial = opcoes.posicaoInicial;
+
+    function posicaoInicialValida(x, y) {
+        return (
+            Number.isInteger(x) &&
+            Number.isInteger(y) &&
+            !posicaoBloqueada(cenario, x, y)
+        );
+    }
+
+    const usarPosicaoInicial = posicaoInicialValida(
+        posicaoInicial?.x,
+        posicaoInicial?.y
+    );
+
     const personagem = {
-        x: 5,
-        y: 9,
+        x: usarPosicaoInicial ? posicaoInicial.x : 5,
+        y: usarPosicaoInicial ? posicaoInicial.y : 9,
         cor: "#f5d76e"
     };
 
     let encerrada = false;
+    let transicaoEmAndamento = false;
     let temporizadorPatrulha = null;
     let areaAtual = null;
+
+    function notificarMovimento() {
+        try {
+            aoMover({
+                localId: cenario.localId,
+                x: personagem.x,
+                y: personagem.y
+            });
+        } catch (erro) {
+            console.error(
+                "Não foi possível salvar a posição do personagem:",
+                erro
+            );
+        }
+    }
 
     function posicaoOcupadaPorCriatura(x, y, ignorarId = null) {
         return controladorCriaturas.listar().some((criatura) => {
@@ -107,7 +148,7 @@ export function iniciarExploracao(canvas, localId = "praca") {
     }
 
     function patrulharCriaturas() {
-        if (encerrada) {
+        if (encerrada || transicaoEmAndamento) {
             return;
         }
 
@@ -117,9 +158,9 @@ export function iniciarExploracao(canvas, localId = "praca") {
         for (const criatura of criaturas) {
             const direcoes = [...DIRECOES_CRIATURAS];
 
-            // Embaralha a ordem para variar os movimentos da criatura.
             for (let i = direcoes.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
+
                 [direcoes[i], direcoes[j]] = [
                     direcoes[j],
                     direcoes[i]
@@ -170,6 +211,7 @@ export function iniciarExploracao(canvas, localId = "praca") {
 
         // Sombra no chão
         contexto.beginPath();
+
         contexto.ellipse(
             centroX,
             centroY + escala * 0.36,
@@ -179,6 +221,7 @@ export function iniciarExploracao(canvas, localId = "praca") {
             0,
             Math.PI * 2
         );
+
         contexto.fillStyle = "rgba(0, 0, 0, 0.35)";
         contexto.fill();
 
@@ -190,62 +233,77 @@ export function iniciarExploracao(canvas, localId = "praca") {
 
         // Pernas
         contexto.beginPath();
+
         contexto.moveTo(
             centroX - escala * 0.07,
             centroY + escala * 0.12
         );
+
         contexto.lineTo(
             centroX - escala * 0.10,
             centroY + escala * 0.29
         );
+
         contexto.moveTo(
             centroX + escala * 0.07,
             centroY + escala * 0.12
         );
+
         contexto.lineTo(
             centroX + escala * 0.10,
             centroY + escala * 0.29
         );
+
         contexto.stroke();
 
         // Botas
         contexto.beginPath();
+
         contexto.moveTo(
             centroX - escala * 0.10,
             centroY + escala * 0.29
         );
+
         contexto.lineTo(
             centroX - escala * 0.17,
             centroY + escala * 0.31
         );
+
         contexto.moveTo(
             centroX + escala * 0.10,
             centroY + escala * 0.29
         );
+
         contexto.lineTo(
             centroX + escala * 0.17,
             centroY + escala * 0.31
         );
+
         contexto.stroke();
 
         // Braços
         contexto.beginPath();
+
         contexto.moveTo(
             centroX - escala * 0.10,
             centroY - escala * 0.07
         );
+
         contexto.lineTo(
             centroX - escala * 0.19,
             centroY + escala * 0.09
         );
+
         contexto.moveTo(
             centroX + escala * 0.10,
             centroY - escala * 0.07
         );
+
         contexto.lineTo(
             centroX + escala * 0.19,
             centroY + escala * 0.09
         );
+
         contexto.stroke();
 
         // Mãos
@@ -253,6 +311,7 @@ export function iniciarExploracao(canvas, localId = "praca") {
 
         for (const lado of [-1, 1]) {
             contexto.beginPath();
+
             contexto.arc(
                 centroX + lado * escala * 0.19,
                 centroY + escala * 0.10,
@@ -260,12 +319,14 @@ export function iniciarExploracao(canvas, localId = "praca") {
                 0,
                 Math.PI * 2
             );
+
             contexto.fill();
             contexto.stroke();
         }
 
         // Tronco: túnica de aventureiro
         contexto.beginPath();
+
         contexto.roundRect(
             centroX - escala * 0.12,
             centroY - escala * 0.13,
@@ -273,26 +334,31 @@ export function iniciarExploracao(canvas, localId = "praca") {
             escala * 0.29,
             escala * 0.06
         );
+
         contexto.fillStyle = "#3d79a5";
         contexto.fill();
         contexto.stroke();
 
         // Cinto
         contexto.beginPath();
+
         contexto.moveTo(
             centroX - escala * 0.11,
             centroY + escala * 0.07
         );
+
         contexto.lineTo(
             centroX + escala * 0.11,
             centroY + escala * 0.07
         );
+
         contexto.strokeStyle = "#654326";
         contexto.lineWidth = escala * 0.055;
         contexto.stroke();
 
         // Cabeça
         contexto.beginPath();
+
         contexto.arc(
             centroX,
             centroY - escala * 0.22,
@@ -300,6 +366,7 @@ export function iniciarExploracao(canvas, localId = "praca") {
             0,
             Math.PI * 2
         );
+
         contexto.fillStyle = "#e9b58c";
         contexto.fill();
         contexto.lineWidth = escala * 0.04;
@@ -308,6 +375,7 @@ export function iniciarExploracao(canvas, localId = "praca") {
 
         // Cabelo
         contexto.beginPath();
+
         contexto.arc(
             centroX,
             centroY - escala * 0.255,
@@ -315,22 +383,27 @@ export function iniciarExploracao(canvas, localId = "praca") {
             Math.PI,
             Math.PI * 2
         );
+
         contexto.lineTo(
             centroX + escala * 0.12,
             centroY - escala * 0.22
         );
+
         contexto.lineTo(
             centroX + escala * 0.04,
             centroY - escala * 0.25
         );
+
         contexto.lineTo(
             centroX - escala * 0.02,
             centroY - escala * 0.20
         );
+
         contexto.lineTo(
             centroX - escala * 0.09,
             centroY - escala * 0.23
         );
+
         contexto.closePath();
         contexto.fillStyle = "#493126";
         contexto.fill();
@@ -341,6 +414,7 @@ export function iniciarExploracao(canvas, localId = "praca") {
 
         for (const lado of [-1, 1]) {
             contexto.beginPath();
+
             contexto.arc(
                 centroX + lado * escala * 0.05,
                 centroY - escala * 0.22,
@@ -348,6 +422,7 @@ export function iniciarExploracao(canvas, localId = "praca") {
                 0,
                 Math.PI * 2
             );
+
             contexto.fill();
         }
 
@@ -363,6 +438,7 @@ export function iniciarExploracao(canvas, localId = "praca") {
     function aoPressionarTecla(evento) {
         if (
             encerrada ||
+            transicaoEmAndamento ||
             evento.altKey ||
             evento.ctrlKey ||
             evento.metaKey
@@ -418,63 +494,84 @@ export function iniciarExploracao(canvas, localId = "praca") {
         personagem.y = novoY;
 
         desenhar();
+
+        // Salva cada movimento válido para persistir a posição.
+        notificarMovimento();
+
+        const entrada = (cenario.entradas ?? []).find(
+            (item) =>
+                item.tipoTransicao === "automatica" &&
+                item.x === personagem.x &&
+                item.y === personagem.y
+        );
+
+        if (entrada) {
+            transicaoEmAndamento = true;
+            aoEntrar(entrada);
+        }
     }
 
     function aoClicarCanvas(evento) {
-    if (encerrada || !areaAtual) {
-        return;
+        if (encerrada || transicaoEmAndamento || !areaAtual) {
+            return;
+        }
+
+        const retangulo = canvas.getBoundingClientRect();
+
+        const escalaX = canvas.width / retangulo.width;
+        const escalaY = canvas.height / retangulo.height;
+
+        const mouseX = (evento.clientX - retangulo.left) * escalaX;
+        const mouseY = (evento.clientY - retangulo.top) * escalaY;
+
+        const celulaX = Math.floor(
+            (mouseX - areaAtual.deslocamentoX) /
+            areaAtual.tamanhoCelula
+        );
+
+        const celulaY = Math.floor(
+            (mouseY - areaAtual.deslocamentoY) /
+            areaAtual.tamanhoCelula
+        );
+
+        const criatura = controladorCriaturas.listar().find(
+            (item) => item.x === celulaX && item.y === celulaY
+        );
+
+        if (!criatura) {
+            return;
+        }
+
+        const distanciaX = Math.abs(personagem.x - criatura.x);
+        const distanciaY = Math.abs(personagem.y - criatura.y);
+
+        const distancia = Math.max(distanciaX, distanciaY);
+
+        if (distancia > DISTANCIA_MAXIMA_INTERACAO) {
+            return;
+        }
+
+        // Garante que a posição esteja salva antes de abrir o combate.
+        notificarMovimento();
+
+        const destino = new URL(
+            "/telas/combate.html",
+            window.location.origin
+        );
+
+        destino.searchParams.set("monstroId", criatura.monstroId);
+
+        window.location.href = destino.href;
     }
-
-    const retangulo = canvas.getBoundingClientRect();
-
-    const escalaX = canvas.width / retangulo.width;
-    const escalaY = canvas.height / retangulo.height;
-
-    const mouseX = (evento.clientX - retangulo.left) * escalaX;
-    const mouseY = (evento.clientY - retangulo.top) * escalaY;
-
-    const celulaX = Math.floor(
-        (mouseX - areaAtual.deslocamentoX) /
-        areaAtual.tamanhoCelula
-    );
-
-    const celulaY = Math.floor(
-        (mouseY - areaAtual.deslocamentoY) /
-        areaAtual.tamanhoCelula
-    );
-
-    const criatura = controladorCriaturas.listar().find(
-        (item) => item.x === celulaX && item.y === celulaY
-    );
-
-    if (!criatura) {
-        return;
-    }
-
-    const distanciaX = Math.abs(personagem.x - criatura.x);
-    const distanciaY = Math.abs(personagem.y - criatura.y);
-
-    const distancia = Math.max(distanciaX, distanciaY);
-
-    if (distancia > DISTANCIA_MAXIMA_INTERACAO) {
-        return;
-    }
-
-    const destino = new URL(
-        "/telas/combate.html",
-        window.location.origin
-    );
-
-    destino.searchParams.set("monstroId", criatura.monstroId);
-
-    window.location.href = destino.href;
-}
 
     canvas.addEventListener("keydown", aoPressionarTecla);
     canvas.addEventListener("click", aoClicarCanvas);
 
     desenhar();
     canvas.focus();
+
+    // Registra a posição inicial também.
+    notificarMovimento();
 
     temporizadorPatrulha = setInterval(
         patrulharCriaturas,
@@ -487,13 +584,15 @@ export function iniciarExploracao(canvas, localId = "praca") {
         cenario,
         personagem,
         controladorCriaturas,
-
         desenhar,
 
         destruir() {
             if (encerrada) {
                 return;
             }
+
+            // Faz uma última tentativa de salvar antes de encerrar.
+            notificarMovimento();
 
             encerrada = true;
 
@@ -506,6 +605,7 @@ export function iniciarExploracao(canvas, localId = "praca") {
                 "keydown",
                 aoPressionarTecla
             );
+
             canvas.removeEventListener(
                 "click",
                 aoClicarCanvas

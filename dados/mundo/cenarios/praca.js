@@ -1,3 +1,4 @@
+
 export const cenarioPraca = {
     localId: "praca",
     nome: "Praça",
@@ -13,12 +14,13 @@ export const cenarioPraca = {
         ["grama", "grama", "grama", "grama", "grama", "grama", "terra", "terra", "terra", "terra", "grama", "grama", "grama", "grama", "grama", "grama"],
         ["grama", "grama", "grama", "grama", "grama", "grama", "terra", "terra", "terra", "terra", "grama", "grama", "grama", "grama", "grama", "grama"],
         ["grama", "grama", "grama", "grama", "grama", "grama", "terra", "terra", "terra", "terra", "grama", "grama", "grama", "grama", "grama", "grama"],
-        ["grama", "grama", "grama", "grama", "grama", "grama", "terra", "terra", "terra", "terra", "grama", "grama", "grama", "grama", "grama", "grama"],
+        ["grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"],
         ["grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"],
         ["grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"],
         ["grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"],
         ["grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama", "grama"]
     ],
+
     terrenosBloqueados: ["agua", "pedra"],
 
     objetos: [
@@ -29,6 +31,20 @@ export const cenarioPraca = {
         { tipo: "pedra", x: 2, y: 8 },
         { tipo: "casa", x: 10, y: 3, largura: 3, altura: 3 }
     ],
+
+    entradas: [
+    {
+        x: 11,
+        y: 6,
+        tipoTransicao: "automatica",
+        destino: "taverna",
+        posicaoChegada: {
+            x: 8,
+            y: 9
+        }
+    }
+],
+
     criaturas: [
         {
             id: "lobo-01",
@@ -37,5 +53,4 @@ export const cenarioPraca = {
             y: 4
         }
     ]
-
 };

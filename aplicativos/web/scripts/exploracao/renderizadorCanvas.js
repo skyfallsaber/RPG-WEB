@@ -1,8 +1,13 @@
+
 const CORES_TERRENO = {
     grama: "#547b3b",
     terra: "#9b7446",
     pedra: "#777b7b",
-    agua: "#367f9b"
+    agua: "#367f9b",
+    madeira: "#79502f",
+    madeiraEscura: "#503522",
+    madeiraClara: "#a87543",
+    interior: "#49352b"
 };
 
 function validarCenario(cenario) {
@@ -12,22 +17,33 @@ function validarCenario(cenario) {
 
     const { largura, altura, terreno, objetos } = cenario;
 
-    if (!Number.isInteger(largura) || largura < 1 ||
-        !Number.isInteger(altura) || altura < 1) {
-        throw new TypeError("A largura e a altura do cenário devem ser inteiros positivos.");
+    if (
+        !Number.isInteger(largura) || largura < 1 ||
+        !Number.isInteger(altura) || altura < 1
+    ) {
+        throw new TypeError(
+            "A largura e a altura do cenário devem ser inteiros positivos."
+        );
     }
 
     if (!Array.isArray(terreno) || terreno.length !== altura) {
-        throw new TypeError("O terreno deve conter uma linha para cada unidade de altura.");
+        throw new TypeError(
+            "O terreno deve conter uma linha para cada unidade de altura."
+        );
     }
 
     for (const linha of terreno) {
         if (!Array.isArray(linha) || linha.length !== largura) {
-            throw new TypeError("Todas as linhas do terreno devem ter a largura definida no cenário.");
+            throw new TypeError(
+                "Todas as linhas do terreno devem ter a largura definida no cenário."
+            );
         }
+
         for (const tipo of linha) {
-            if (!(tipo in CORES_TERRENO)) {
-                throw new TypeError(`Tipo de terreno não reconhecido: ${tipo}`);
+            if (!Object.hasOwn(CORES_TERRENO, tipo)) {
+                throw new TypeError(
+                    `Tipo de terreno não reconhecido: ${tipo}`
+                );
             }
         }
     }
@@ -47,7 +63,9 @@ function validarCenario(cenario) {
  */
 export function renderizarCenario(contexto, cenario, opcoes = {}) {
     if (!contexto || typeof contexto.fillRect !== "function") {
-        throw new TypeError("É necessário fornecer um contexto 2D válido.");
+        throw new TypeError(
+            "É necessário fornecer um contexto 2D válido."
+        );
     }
 
     validarCenario(cenario);
@@ -55,16 +73,25 @@ export function renderizarCenario(contexto, cenario, opcoes = {}) {
     const largura = opcoes.largura ?? contexto.canvas?.width;
     const altura = opcoes.altura ?? contexto.canvas?.height;
 
-    if (!Number.isFinite(largura) || largura <= 0 ||
-        !Number.isFinite(altura) || altura <= 0) {
-        throw new TypeError("Informe largura e altura válidas para a área de desenho.");
+    if (
+        !Number.isFinite(largura) || largura <= 0 ||
+        !Number.isFinite(altura) || altura <= 0
+    ) {
+        throw new TypeError(
+            "Informe largura e altura válidas para a área de desenho."
+        );
     }
 
     const tamanhoCelula = opcoes.tamanhoCelula ??
-        Math.min(largura / cenario.largura, altura / cenario.altura);
+        Math.min(
+            largura / cenario.largura,
+            altura / cenario.altura
+        );
 
     if (!Number.isFinite(tamanhoCelula) || tamanhoCelula <= 0) {
-        throw new TypeError("O tamanho da célula deve ser positivo.");
+        throw new TypeError(
+            "O tamanho da célula deve ser positivo."
+        );
     }
 
     const larguraMundo = cenario.largura * tamanhoCelula;
@@ -83,17 +110,74 @@ export function renderizarCenario(contexto, cenario, opcoes = {}) {
             const py = deslocamentoY + y * tamanhoCelula;
 
             contexto.fillStyle = CORES_TERRENO[tipo];
-            contexto.fillRect(px, py, tamanhoCelula, tamanhoCelula);
+            contexto.fillRect(
+                px,
+                py,
+                tamanhoCelula,
+                tamanhoCelula
+            );
 
-            // Pequena borda discreta para deixar as células legíveis durante o protótipo.
             contexto.strokeStyle = "rgba(0, 0, 0, 0.08)";
             contexto.lineWidth = 1;
-            contexto.strokeRect?.(px, py, tamanhoCelula, tamanhoCelula);
+            contexto.strokeRect?.(
+                px,
+                py,
+                tamanhoCelula,
+                tamanhoCelula
+            );
+
+            // Detalhes das tábuas dos pisos de madeira.
+            if (
+                tipo === "madeira" ||
+                tipo === "madeiraEscura" ||
+                tipo === "madeiraClara"
+            ) {
+                contexto.strokeStyle = "rgba(45, 26, 16, 0.28)";
+                contexto.lineWidth = 1;
+                contexto.beginPath();
+
+                contexto.moveTo(
+                    px + tamanhoCelula * 0.12,
+                    py + tamanhoCelula * 0.35
+                );
+                contexto.lineTo(
+                    px + tamanhoCelula * 0.88,
+                    py + tamanhoCelula * 0.35
+                );
+
+                contexto.moveTo(
+                    px + tamanhoCelula * 0.12,
+                    py + tamanhoCelula * 0.75
+                );
+                contexto.lineTo(
+                    px + tamanhoCelula * 0.88,
+                    py + tamanhoCelula * 0.75
+                );
+
+                contexto.stroke();
+            }
+
+            // Pedra com textura discreta.
+            if (tipo === "pedra") {
+                contexto.fillStyle = "rgba(255, 255, 255, 0.05)";
+                contexto.fillRect(
+                    px + tamanhoCelula * 0.12,
+                    py + tamanhoCelula * 0.12,
+                    tamanhoCelula * 0.25,
+                    tamanhoCelula * 0.08
+                );
+            }
         }
     }
 
     for (const objeto of cenario.objetos ?? []) {
-        desenharObjeto(contexto, objeto, tamanhoCelula, deslocamentoX, deslocamentoY);
+        desenharObjeto(
+            contexto,
+            objeto,
+            tamanhoCelula,
+            deslocamentoX,
+            deslocamentoY
+        );
     }
 
     return {
@@ -105,8 +189,18 @@ export function renderizarCenario(contexto, cenario, opcoes = {}) {
     };
 }
 
-function desenharObjeto(contexto, objeto, tamanhoCelula, deslocamentoX, deslocamentoY) {
-    if (!objeto || !Number.isFinite(objeto.x) || !Number.isFinite(objeto.y)) {
+function desenharObjeto(
+    contexto,
+    objeto,
+    tamanhoCelula,
+    deslocamentoX,
+    deslocamentoY
+) {
+    if (
+        !objeto ||
+        !Number.isFinite(objeto.x) ||
+        !Number.isFinite(objeto.y)
+    ) {
         return;
     }
 
@@ -117,6 +211,7 @@ function desenharObjeto(contexto, objeto, tamanhoCelula, deslocamentoX, deslocam
 
     switch (objeto.tipo) {
         case "arvore": {
+            // Tronco.
             contexto.fillStyle = "#4b3424";
             contexto.fillRect(
                 x + tamanhoCelula * 0.42,
@@ -124,23 +219,25 @@ function desenharObjeto(contexto, objeto, tamanhoCelula, deslocamentoX, deslocam
                 tamanhoCelula * 0.16,
                 tamanhoCelula * 0.42
             );
+
+            // Copa.
             contexto.fillStyle = "#234f31";
-            contexto.beginPath?.();
-            contexto.arc?.(
+            contexto.beginPath();
+            contexto.arc(
                 x + tamanhoCelula / 2,
                 y + tamanhoCelula * 0.42,
                 tamanhoCelula * 0.39,
                 0,
                 Math.PI * 2
             );
-            contexto.fill?.();
+            contexto.fill();
             break;
         }
 
-        case "pedra":
+        case "pedra": {
             contexto.fillStyle = "#a0a5a3";
-            contexto.beginPath?.();
-            contexto.ellipse?.(
+            contexto.beginPath();
+            contexto.ellipse(
                 x + tamanhoCelula / 2,
                 y + tamanhoCelula * 0.62,
                 tamanhoCelula * 0.31,
@@ -149,19 +246,27 @@ function desenharObjeto(contexto, objeto, tamanhoCelula, deslocamentoX, deslocam
                 0,
                 Math.PI * 2
             );
-            contexto.fill?.();
+            contexto.fill();
             break;
+        }
 
-        case "casa":
+        case "casa": {
             contexto.fillStyle = "#8d5b3c";
-            contexto.fillRect(x, y + altura * 0.25, largura, altura * 0.75);
+            contexto.fillRect(
+                x,
+                y + altura * 0.25,
+                largura,
+                altura * 0.75
+            );
+
             contexto.fillStyle = "#633b32";
-            contexto.beginPath?.();
-            contexto.moveTo?.(x - largura * 0.08, y + altura * 0.28);
-            contexto.lineTo?.(x + largura / 2, y);
-            contexto.lineTo?.(x + largura * 1.08, y + altura * 0.28);
-            contexto.closePath?.();
-            contexto.fill?.();
+            contexto.beginPath();
+            contexto.moveTo(x - largura * 0.08, y + altura * 0.28);
+            contexto.lineTo(x + largura / 2, y);
+            contexto.lineTo(x + largura * 1.08, y + altura * 0.28);
+            contexto.closePath();
+            contexto.fill();
+
             contexto.fillStyle = "#33271f";
             contexto.fillRect(
                 x + largura * 0.42,
@@ -170,10 +275,307 @@ function desenharObjeto(contexto, objeto, tamanhoCelula, deslocamentoX, deslocam
                 altura * 0.42
             );
             break;
+        }
 
-        default:
-            // Tipos de objeto desconhecidos são ignorados para facilitar expansão dos dados.
+        case "parede": {
+            // Parede de madeira com tábuas horizontais.
+            contexto.fillStyle = "#69452f";
+            contexto.fillRect(x, y, largura, altura);
+
+            contexto.strokeStyle = "#3e291f";
+            contexto.lineWidth = Math.max(
+                1,
+                tamanhoCelula * 0.035
+            );
+
+            for (
+                let py = y + tamanhoCelula * 0.25;
+                py < y + altura;
+                py += tamanhoCelula * 0.3
+            ) {
+                contexto.beginPath();
+                contexto.moveTo(x, py);
+                contexto.lineTo(x + largura, py);
+                contexto.stroke();
+            }
+
             break;
+        }
+
+        case "mesa": {
+            // Sombra.
+            contexto.fillStyle = "rgba(0, 0, 0, 0.25)";
+            contexto.fillRect(
+                x + largura * 0.08,
+                y + altura * 0.15,
+                largura * 0.84,
+                altura * 0.78
+            );
+
+            // Tampo.
+            contexto.fillStyle = "#9b6638";
+            contexto.fillRect(
+                x,
+                y,
+                largura,
+                altura * 0.62
+            );
+
+            contexto.strokeStyle = "#54351f";
+            contexto.lineWidth = Math.max(
+                1,
+                tamanhoCelula * 0.04
+            );
+            contexto.strokeRect(
+                x,
+                y,
+                largura,
+                altura * 0.62
+            );
+
+            // Divisão entre as tábuas.
+            contexto.strokeStyle = "rgba(65, 37, 21, 0.5)";
+            contexto.beginPath();
+            contexto.moveTo(x + largura * 0.5, y);
+            contexto.lineTo(
+                x + largura * 0.5,
+                y + altura * 0.62
+            );
+            contexto.stroke();
+            break;
+        }
+
+        case "banco": {
+            // Sombra e assento.
+            contexto.fillStyle = "#684329";
+            contexto.fillRect(
+                x,
+                y,
+                largura,
+                altura * 0.38
+            );
+
+            contexto.fillStyle = "#a16c3d";
+            contexto.fillRect(
+                x,
+                y + altura * 0.08,
+                largura,
+                altura * 0.25
+            );
+            break;
+        }
+
+        case "balcao": {
+            // Corpo do balcão.
+            contexto.fillStyle = "#503321";
+            contexto.fillRect(x, y, largura, altura);
+
+            // Tampo mais claro.
+            contexto.fillStyle = "#a56d3c";
+            contexto.fillRect(
+                x,
+                y,
+                largura,
+                Math.max(
+                    tamanhoCelula * 0.2,
+                    altura * 0.22
+                )
+            );
+
+            contexto.strokeStyle = "#392419";
+            contexto.lineWidth = Math.max(
+                1,
+                tamanhoCelula * 0.04
+            );
+            contexto.strokeRect(x, y, largura, altura);
+            break;
+        }
+
+        case "prateleira": {
+            contexto.fillStyle = "#5b3925";
+            contexto.fillRect(x, y, largura, altura);
+
+            // Prateleiras.
+            contexto.fillStyle = "#b17a43";
+            contexto.fillRect(
+                x,
+                y + altura * 0.42,
+                largura,
+                altura * 0.12
+            );
+
+            contexto.fillStyle = "#c7a06b";
+            contexto.fillRect(
+                x,
+                y + altura * 0.82,
+                largura,
+                altura * 0.12
+            );
+
+            // Garrafas decorativas.
+            const quantidade = Math.max(
+                1,
+                Math.floor(largura / (tamanhoCelula * 0.3))
+            );
+            const coresGarrafas = [
+                "#56734a",
+                "#a64f36",
+                "#c49a42",
+                "#4b625b"
+            ];
+
+            for (let i = 0; i < quantidade; i += 1) {
+                const garrafaX =
+                    x + largura * ((i + 0.5) / quantidade);
+                const garrafaY = y + altura * 0.18;
+                const raio = Math.min(
+                    tamanhoCelula * 0.07,
+                    largura / quantidade * 0.22
+                );
+
+                contexto.fillStyle =
+                    coresGarrafas[i % coresGarrafas.length];
+
+                contexto.fillRect(
+                    garrafaX - raio,
+                    garrafaY,
+                    raio * 2,
+                    altura * 0.2
+                );
+
+                contexto.fillRect(
+                    garrafaX - raio * 0.5,
+                    garrafaY - altura * 0.07,
+                    raio,
+                    altura * 0.08
+                );
+            }
+
+            break;
+        }
+
+        case "barril": {
+            // Corpo do barril.
+            contexto.fillStyle = "#86552f";
+            contexto.fillRect(
+                x + largura * 0.15,
+                y + altura * 0.1,
+                largura * 0.7,
+                altura * 0.8
+            );
+
+            contexto.strokeStyle = "#493020";
+            contexto.lineWidth = Math.max(
+                1,
+                tamanhoCelula * 0.05
+            );
+            contexto.strokeRect(
+                x + largura * 0.15,
+                y + altura * 0.1,
+                largura * 0.7,
+                altura * 0.8
+            );
+
+            // Aros metálicos.
+            contexto.fillStyle = "#b18a55";
+            contexto.fillRect(
+                x + largura * 0.12,
+                y + altura * 0.28,
+                largura * 0.76,
+                altura * 0.1
+            );
+            contexto.fillRect(
+                x + largura * 0.12,
+                y + altura * 0.65,
+                largura * 0.76,
+                altura * 0.1
+            );
+            break;
+        }
+
+        case "porta": {
+            // Moldura.
+            contexto.fillStyle = "#38251b";
+            contexto.fillRect(x, y, largura, altura);
+
+            // Folha da porta.
+            contexto.fillStyle = "#87552f";
+            contexto.fillRect(
+                x + largura * 0.12,
+                y + altura * 0.08,
+                largura * 0.76,
+                altura * 0.92
+            );
+
+            // Maçaneta.
+            contexto.fillStyle = "#d6ad61";
+            contexto.beginPath();
+            contexto.arc(
+                x + largura * 0.75,
+                y + altura * 0.55,
+                tamanhoCelula * 0.045,
+                0,
+                Math.PI * 2
+            );
+            contexto.fill();
+            break;
+        }
+
+        case "tocha": {
+            // Suporte.
+            contexto.fillStyle = "#493020";
+            contexto.fillRect(
+                x + largura * 0.4,
+                y + altura * 0.25,
+                largura * 0.2,
+                altura * 0.6
+            );
+
+            // Halo de luz.
+            contexto.fillStyle = "rgba(255, 151, 48, 0.16)";
+            contexto.beginPath();
+            contexto.arc(
+                x + largura / 2,
+                y + altura * 0.3,
+                tamanhoCelula * 0.45,
+                0,
+                Math.PI * 2
+            );
+            contexto.fill();
+
+            // Chama.
+            contexto.fillStyle = "#ff9d38";
+            contexto.beginPath();
+            contexto.ellipse(
+                x + largura / 2,
+                y + altura * 0.23,
+                largura * 0.18,
+                altura * 0.2,
+                0,
+                0,
+                Math.PI * 2
+            );
+            contexto.fill();
+
+            contexto.fillStyle = "#ffe6a0";
+            contexto.beginPath();
+            contexto.ellipse(
+                x + largura / 2,
+                y + altura * 0.25,
+                largura * 0.07,
+                altura * 0.11,
+                0,
+                0,
+                Math.PI * 2
+            );
+            contexto.fill();
+            break;
+        }
+
+        default: {
+            // Tipos desconhecidos continuam sendo ignorados.
+            break;
+        }
     }
 }
 
@@ -187,11 +589,15 @@ function desenharObjeto(contexto, objeto, tamanhoCelula, deslocamentoX, deslocam
  */
 export function renderizarCriaturas(contexto, criaturas, area) {
     if (!contexto || typeof contexto.beginPath !== "function") {
-        throw new TypeError("É necessário fornecer um contexto 2D válido.");
+        throw new TypeError(
+            "É necessário fornecer um contexto 2D válido."
+        );
     }
 
     if (!Array.isArray(criaturas)) {
-        throw new TypeError("As criaturas devem ser fornecidas em uma lista.");
+        throw new TypeError(
+            "As criaturas devem ser fornecidas em uma lista."
+        );
     }
 
     if (
@@ -232,14 +638,19 @@ function desenharCriatura(contexto, criatura, area) {
     if (criatura.monstroId === "lobo-da-floresta") {
         desenharLobo(contexto, centroX, centroY, escala);
     } else {
-        desenharCriaturaGenerica(contexto, centroX, centroY, escala);
+        desenharCriaturaGenerica(
+            contexto,
+            centroX,
+            centroY,
+            escala
+        );
     }
 
     contexto.restore();
 }
 
 function desenharLobo(contexto, centroX, centroY, escala) {
-    // Sombra
+    // Sombra.
     contexto.beginPath();
     contexto.ellipse(
         centroX,
@@ -253,7 +664,7 @@ function desenharLobo(contexto, centroX, centroY, escala) {
     contexto.fillStyle = "rgba(0, 0, 0, 0.35)";
     contexto.fill();
 
-    // Pernas
+    // Pernas.
     contexto.beginPath();
     contexto.lineWidth = escala * 0.07;
     contexto.lineCap = "round";
@@ -272,7 +683,7 @@ function desenharLobo(contexto, centroX, centroY, escala) {
 
     contexto.stroke();
 
-    // Corpo
+    // Corpo.
     contexto.beginPath();
     contexto.ellipse(
         centroX,
@@ -289,7 +700,7 @@ function desenharLobo(contexto, centroX, centroY, escala) {
     contexto.lineWidth = escala * 0.035;
     contexto.stroke();
 
-    // Cauda
+    // Cauda.
     contexto.beginPath();
     contexto.moveTo(
         centroX - escala * 0.22,
@@ -305,7 +716,7 @@ function desenharLobo(contexto, centroX, centroY, escala) {
     contexto.lineWidth = escala * 0.075;
     contexto.stroke();
 
-    // Cabeça
+    // Cabeça.
     contexto.beginPath();
     contexto.arc(
         centroX + escala * 0.18,
@@ -320,7 +731,7 @@ function desenharLobo(contexto, centroX, centroY, escala) {
     contexto.lineWidth = escala * 0.035;
     contexto.stroke();
 
-    // Orelhas
+    // Orelhas.
     for (const lado of [-1, 1]) {
         contexto.beginPath();
         contexto.moveTo(
@@ -341,7 +752,7 @@ function desenharLobo(contexto, centroX, centroY, escala) {
         contexto.stroke();
     }
 
-    // Focinho
+    // Focinho.
     contexto.beginPath();
     contexto.ellipse(
         centroX + escala * 0.29,
@@ -356,7 +767,7 @@ function desenharLobo(contexto, centroX, centroY, escala) {
     contexto.fill();
     contexto.stroke();
 
-    // Nariz
+    // Nariz.
     contexto.beginPath();
     contexto.arc(
         centroX + escala * 0.36,
@@ -368,7 +779,7 @@ function desenharLobo(contexto, centroX, centroY, escala) {
     contexto.fillStyle = "#171514";
     contexto.fill();
 
-    // Olho
+    // Olho.
     contexto.beginPath();
     contexto.arc(
         centroX + escala * 0.22,

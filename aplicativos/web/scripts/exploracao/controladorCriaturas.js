@@ -64,6 +64,7 @@ export function criarControladorCriaturas(cenario) {
     });
 
     return {
+        
         mover(id, x, y) {
         const criatura = criaturas.find((item) => item.id === id);
 

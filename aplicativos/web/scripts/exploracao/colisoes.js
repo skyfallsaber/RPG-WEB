@@ -2,7 +2,13 @@
 const TIPOS_BLOQUEADOS = new Set([
     "arvore",
     "pedra",
-    "casa"
+    "casa",
+    "parede",
+    "mesa",
+    "banco",
+    "balcao",
+    "prateleira",
+    "barril"
 ]);
 
 /**
@@ -45,10 +51,10 @@ export function posicaoBloqueada(cenario, x, y) {
         return true;
     }
 
-    const terreno = cenario.terreno[y][x];
+    const terreno = cenario.terreno[y]?.[x];
     const terrenosBloqueados = cenario.terrenosBloqueados ?? [];
 
-    if (terrenosBloqueados.includes(terreno)) {
+    if (terreno === undefined || terrenosBloqueados.includes(terreno)) {
         return true;
     }
 

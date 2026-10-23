@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -49,6 +50,7 @@
                 <button id="voltar-aventura" class="botao-secundario">
                     Voltar à aventura
                 </button>
+
                 <button id="abrir-ficha" class="botao-secundario">
                     Ficha do personagem
                 </button>
@@ -108,7 +110,9 @@
                     <h2>Para onde deseja ir?</h2>
                 </div>
 
-                <span class="contador" id="contador-destinos">0 destinos</span>
+                <span class="contador" id="contador-destinos">
+                    0 destinos
+                </span>
             </div>
 
             <div id="lista-destinos" class="lista-destinos"></div>
@@ -145,22 +149,27 @@
 
         const listaDestinos = document.getElementById("lista-destinos");
         const mensagemMapa = document.getElementById("mensagem-mapa");
-        const canvasExploracao = document.getElementById("canvas-exploracao");
+        const canvasExploracao =
+            document.getElementById("canvas-exploracao");
         const mensagemExploracao =
             document.getElementById("mensagem-exploracao");
-        const tituloCenario = document.getElementById("titulo-cenario");
+        const tituloCenario =
+            document.getElementById("titulo-cenario");
 
         let ultimoLocalRenderizado = null;
+        let controladorExploracaoAtual = null;
 
         document
             .getElementById("voltar-aventura")
             .addEventListener("click", () => {
+                salvarPosicaoExploracao();
                 window.location.href = "/telas/inicio.html";
             });
 
         document
             .getElementById("abrir-ficha")
             .addEventListener("click", () => {
+                salvarPosicaoExploracao();
                 window.location.href = "/telas/personagem.html";
             });
 
@@ -193,9 +202,11 @@
 
         function mostrarLocalAtual(personagem) {
             const local = obterLocalAtual(personagem);
+
             const regiao = obterRegiao(
                 personagem.localizacao?.regiaoId
             );
+
             const cidade = obterCidade(
                 personagem.localizacao?.cidadeId
             );
@@ -231,44 +242,154 @@
             return local;
         }
 
-        function mostrarCenario(local) {
+        /**
+         * Salva a posição atual do controlador no registro
+         * específico do cenário em que o personagem está.
+         */
+        function salvarPosicaoExploracao() {
+            if (!controladorExploracaoAtual) {
+                return;
+            }
+
+            const { cenario, personagem: personagemExploracao } =
+                controladorExploracaoAtual;
+
+            salvarPosicaoLocal(
+                cenario.localId,
+                personagemExploracao.x,
+                personagemExploracao.y
+            );
+        }
+
+        /**
+         * Mantém as posições de cada cenário separadas.
+         *
+         * Exemplo:
+         * posicoesExploracao: {
+         *     praca: { x: 11, y: 7 },
+         *     taverna: { x: 8, y: 9 }
+         * }
+         */
+        function salvarPosicaoLocal(localId, x, y) {
+            if (
+                typeof localId !== "string" ||
+                !Number.isInteger(x) ||
+                !Number.isInteger(y)
+            ) {
+                return;
+            }
+
+            const personagem = carregarPersonagem();
+
+            if (!personagem) {
+                return;
+            }
+
+            personagem.posicoesExploracao ??= {};
+
+            personagem.posicoesExploracao[localId] = {
+                x,
+                y
+            };
+
+            const resultado = salvarPersonagem(personagem);
+
+            if (!resultado.sucesso) {
+                mostrarMensagem(
+                    resultado.mensagem ||
+                        "Não foi possível salvar a posição do personagem.",
+                    true
+                );
+            }
+        }
+
+        function mostrarCenario(local, posicaoChegada = null) {
             if (!local) {
-                canvasExploracao.hidden = true;
                 mensagemExploracao.textContent =
                     "Não foi possível identificar o cenário deste local.";
                 return;
             }
 
-            if (ultimoLocalRenderizado === local.id) {
+            if (
+                ultimoLocalRenderizado === local.id &&
+                controladorExploracaoAtual
+            ) {
                 return;
             }
 
-            ultimoLocalRenderizado = local.id;
+            tituloCenario.textContent = local.nome;
 
-            if (local.id !== "praca") {
-                canvasExploracao.hidden = true;
-                tituloCenario.textContent = local.nome;
-                mensagemExploracao.textContent =
-                    "O cenário visual deste local ainda não foi criado.";
-                return;
-            }
+            /*
+             * Não sobrescrevemos a posição salva do destino
+             * com as coordenadas do cenário anterior.
+             */
+            const personagemSalvo = carregarPersonagem();
+
+            const posicaoSalva =
+                personagemSalvo?.posicoesExploracao?.[local.id];
+
+            /*
+             * Prioridade:
+             * 1. Última posição salva neste cenário.
+             * 2. Posição de chegada da entrada.
+             * 3. Posição inicial padrão do controlador.
+             */
+            const posicaoInicial =
+                posicaoSalva ?? posicaoChegada ?? undefined;
+
+            let novoControlador;
 
             try {
                 canvasExploracao.hidden = false;
-                tituloCenario.textContent = local.nome;
 
-                iniciarExploracao(canvasExploracao, local.id);
+                novoControlador = iniciarExploracao(
+                    canvasExploracao,
+                    local.id,
+                    {
+                        posicaoInicial,
 
-                mensagemExploracao.textContent =
-    "Use W, A, S, D ou as setas do teclado para movimentar seu personagem. Clique no cenário para ativar os controles.";
+                        // Salva cada movimento válido.
+                        aoMover(posicao) {
+                            salvarPosicaoLocal(
+                                posicao.localId,
+                                posicao.x,
+                                posicao.y
+                            );
+                        },
+
+                        // Transição automática entre cenários.
+                        aoEntrar(entrada) {
+                            viajarPara(
+                                entrada.destino,
+                                entrada.posicaoChegada
+                            );
+                        }
+                    }
+                );
             } catch (erro) {
-                canvasExploracao.hidden = true;
+                canvasExploracao.hidden = false;
 
                 mensagemExploracao.textContent =
-                    "Não foi possível carregar o cenário. Verifique os módulos da exploração.";
+                    `O cenário visual de "${local.nome}" ainda não está disponível.`;
 
                 console.error("Erro ao carregar cenário:", erro);
+                return;
             }
+
+            const controladorAnterior = controladorExploracaoAtual;
+
+            controladorExploracaoAtual = novoControlador;
+            ultimoLocalRenderizado = local.id;
+
+            if (controladorAnterior) {
+                controladorAnterior.destruir();
+            }
+
+            // Registra a posição inicial, caso ainda não exista.
+            salvarPosicaoExploracao();
+
+            mensagemExploracao.textContent =
+                "Use W, A, S, D ou as setas do teclado para movimentar seu personagem.";
         }
 
         function mostrarDestinos(personagem) {
@@ -283,6 +404,7 @@
 
             if (destinos.length === 0) {
                 const aviso = document.createElement("p");
+
                 aviso.className = "sem-destinos";
                 aviso.textContent =
                     "Não há caminhos conectados disponíveis neste local.";
@@ -315,6 +437,7 @@
                 const botao = document.createElement("button");
                 botao.className = "botao-viajar";
                 botao.textContent = "Viajar";
+
                 botao.setAttribute(
                     "aria-label",
                     `Viajar para ${destino.nome}`
@@ -342,7 +465,7 @@
             return icones[id] || "◇";
         }
 
-        function viajarPara(destinoId) {
+        function viajarPara(destinoId, posicaoChegada = null) {
             const personagem = carregarPersonagem();
 
             if (!personagem) {
@@ -350,14 +473,57 @@
                 return;
             }
 
-            const resultado = moverPersonagem(personagem, destinoId);
+            /*
+             * Preserva a posição do cenário de origem antes
+             * de alterar a localização do personagem.
+             */
+            salvarPosicaoExploracao();
+
+            const personagemAtualizado = carregarPersonagem();
+
+            const resultado = moverPersonagem(
+                personagemAtualizado ?? personagem,
+                destinoId
+            );
 
             if (!resultado.sucesso) {
                 mostrarMensagem(resultado.mensagem, true);
                 return;
             }
 
-            salvarPersonagem(resultado.personagem);
+            const personagemDestino = resultado.personagem;
+
+            personagemDestino.posicoesExploracao ??= {};
+
+            const posicaoDestinoSalva =
+                personagemDestino.posicoesExploracao[destinoId];
+
+            /*
+             * A posição de chegada só é usada se o destino
+             * ainda não tiver uma posição previamente salva.
+             */
+            if (
+                !posicaoDestinoSalva &&
+                posicaoChegada &&
+                Number.isInteger(posicaoChegada.x) &&
+                Number.isInteger(posicaoChegada.y)
+            ) {
+                personagemDestino.posicoesExploracao[destinoId] = {
+                    x: posicaoChegada.x,
+                    y: posicaoChegada.y
+                };
+            }
+
+            const salvamento = salvarPersonagem(personagemDestino);
+
+            if (!salvamento.sucesso) {
+                mostrarMensagem(
+                    salvamento.mensagem ||
+                        "Não foi possível salvar o personagem.",
+                    true
+                );
+                return;
+            }
 
             mensagemMapa.textContent = "";
             renderizarMapa();
@@ -365,7 +531,11 @@
 
         function mostrarMensagem(texto, erro = false) {
             mensagemMapa.textContent = texto;
-            mensagemMapa.classList.toggle("mensagem-erro", erro);
+
+            mensagemMapa.classList.toggle(
+                "mensagem-erro",
+                erro
+            );
         }
 
         function renderizarMapa() {
@@ -390,9 +560,27 @@
                 return;
             }
 
-            mostrarCenario(local);
+            mostrarCenario(
+                local,
+                personagem.posicoesExploracao?.[local.id] ?? null
+            );
+
             mostrarDestinos(personagem);
         }
+
+        /*
+         * Garante uma última gravação quando a página
+         * está prestes a ser ocultada ou descarregada.
+         */
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "hidden") {
+                salvarPosicaoExploracao();
+            }
+        });
+
+        window.addEventListener("pagehide", () => {
+            salvarPosicaoExploracao();
+        });
 
         renderizarMapa();
     </script>
